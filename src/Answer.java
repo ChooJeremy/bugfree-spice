@@ -1,5 +1,6 @@
 import java.util.*;
 
+
 public class Answer implements Comparable<Answer>
 {
 	public String title;

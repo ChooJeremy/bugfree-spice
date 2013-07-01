@@ -15,7 +15,6 @@
 //
 //Description:
 //Base class for popular methods
-import java.io.IOException;
 import java.util.*;
 
 public abstract class Jeremy
