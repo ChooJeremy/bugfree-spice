@@ -230,7 +230,13 @@ public class QuizBruteForcer
 					System.out.println("Confirm exit: ");
 					if(Jeremy.getBoolean())
 					{
-						System.out.println(System.getenv());
+						System.out.println("Brain dump:");
+						String env = System.getenv().toString();
+						String[] envs = env.split(", ");
+						for(String anEnv : envs)
+						{
+							System.out.println(anEnv);
+						}
 						System.exit(0);
 					}
 					break;

@@ -1,10 +1,34 @@
 //Calculator Class to do some calculation.
 
+import java.util.Scanner;
+
 public abstract class Calculator
 {
+	public static void main(String[] args)
+	{
+		Scanner scanner = new Scanner(System.in);
+		boolean again;
+		String userInput;
+		do
+		{
+			System.out.print("Enter equation to calculate: ");
+			userInput = scanner.nextLine();
+			if(validateString(userInput).equals("OK"))
+			{
+				System.out.println("Answer: " + calculate(userInput));
+			}
+			else
+			{
+				System.out.println("Invalid input. Response: " + validateString(userInput));
+			}
+			System.out.print("Again? ");
+			again = Jeremy.getBoolean();
+		} while(again);
+	}
+
 	//Special symbol to represent implicit multiplication precedence
 	public static final char implicitMultiplication = 'å';
-	//Used for brackets (i.e. 5(2)) will become 5å2. Basically, this symbol has a lower priority then the expoential symbol,
+	//Used for brackets (i.e. 5(2)) will become 5å2. Basically, this symbol has a lower priority then the exponential symbol,
 	//but a higher priority then multiplication or division.
 
 	public static String validateString(String target)
