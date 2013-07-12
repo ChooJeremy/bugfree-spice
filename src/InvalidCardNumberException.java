@@ -1,6 +1,6 @@
 public class InvalidCardNumberException extends RuntimeException
 {
-	int number;
+	private int number;
 
 	public InvalidCardNumberException(int num) {super(); number = num;}
 	public InvalidCardNumberException(int num, String message)
@@ -18,6 +18,8 @@ public class InvalidCardNumberException extends RuntimeException
 		super(message, cause);
 		number = num;
 	}
+
+	public int getNumber() {return number; }
 
 	@Override
 	public String toString()

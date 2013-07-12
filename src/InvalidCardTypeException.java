@@ -19,6 +19,8 @@ public class InvalidCardTypeException extends RuntimeException
 		type = t;
 	}
 
+	public int getType() {return type; }
+
 	@Override
 	public String toString()
 	{

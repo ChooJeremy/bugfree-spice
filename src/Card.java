@@ -21,7 +21,7 @@ public class Card implements Comparable<Card>
 		}
 		else
 		{
-			throw new InvalidCardTypeException(t, "a new object of Card failed to initalize!");
+			throw new InvalidCardTypeException(t, "a new object of Card failed to initialize!");
 		}
 	}
 
