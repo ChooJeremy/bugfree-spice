@@ -17,6 +17,11 @@ public class Deck
 		reset(totalDecks);
 	}
 
+	public void clear()
+	{
+		deck.clear();
+	}
+
 	public void reset()
 	{
 		deck.clear();
@@ -63,6 +68,16 @@ public class Deck
 	public void sort()
 	{
 		Collections.sort(deck);
+	}
+
+	/**
+	 * Adds a new card to the bottom of the deck
+	 *
+	 * @param c the card to add
+	 */
+	public void addCard(Card c)
+	{
+		deck.add(0, c);
 	}
 
 	@Override
