@@ -162,6 +162,8 @@ public class Question implements Comparable<Question>
 		return false;
 	}
 
+	//It's ok cause it's just casting from a clone
+	@SuppressWarnings("unchecked")
 	public boolean answerCheck(Question q)
 	{
 		ArrayList<Answer> thisOptions = (ArrayList<Answer>) options.clone();
