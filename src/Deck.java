@@ -41,7 +41,7 @@ public class Deck
 	{
 		for(int i = 1; i < 14; i++)
 		{
-			for(int j = Card.Diamond; j <= Card.Spade; j++)
+			for(int j = Card.DIAMOND; j <= Card.SPADE; j++)
 			{
 				deck.add(new Card(i, j));
 			}

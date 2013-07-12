@@ -1,9 +1,9 @@
 public class Card implements Comparable<Card>
 {
-	public static final int Diamond = 1;
-	public static final int Club = 2;
-	public static final int Heart = 3;
-	public static final int Spade = 4;
+	public static final int DIAMOND = 1;
+	public static final int CLUB = 2;
+	public static final int HEART = 3;
+	public static final int SPADE = 4;
 
 	private int type;
 	private int number;
@@ -15,7 +15,7 @@ public class Card implements Comparable<Card>
 			throw new InvalidCardNumberException(num, "a new object of Card failed to initialize!");
 		}
 		number = num;
-		if(t >= Card.Diamond && t <= Card.Spade)
+		if(t >= Card.DIAMOND && t <= Card.SPADE)
 		{
 			type = t;
 		}
@@ -47,10 +47,10 @@ public class Card implements Comparable<Card>
 	{
 		switch (type)
 		{
-			case Diamond: {return "♦";}
-			case Club: {return "♣";}
-			case Heart: {return "♥";}
-			case Spade: {return "♠";}
+			case DIAMOND: {return "♦";}
+			case CLUB: {return "♣";}
+			case HEART: {return "♥";}
+			case SPADE: {return "♠";}
 			default:
 				throw new InvalidCardTypeException(type, "getType method in Card failed - unrecognized type!");
 		}

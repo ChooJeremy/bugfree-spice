@@ -1,5 +1,3 @@
-import java.util.*;
-
 public class Side8Wrapper
 {
 	private Participant player;
@@ -27,7 +25,15 @@ public class Side8Wrapper
 		{
 			opponent.getCard(playerHand.draw());
 		}
-		printBoard(opponent, player, board);
+		player.sortHand();
+		opponent.sortHand();
+	}
+
+	public Side8Wrapper(Participant p, Participant o, Side8Board b)
+	{
+		player = p;
+		opponent = o;
+		board = b;
 	}
 
 	public static Deck initDeck(int totalRepeats)
@@ -38,30 +44,9 @@ public class Side8Wrapper
 		{
 			for(int j = 1; j <= 10; j++)
 			{
-				deck.addCard(new Card(j, Card.Diamond));
+				deck.addCard(new Card(j, Card.DIAMOND));
 			}
 		}
 		return deck;
-	}
-
-	public static void printBoard(Participant o, Participant p, Side8Board b)
-	{
-		printHand(o.getHand());
-		System.out.println(b.getBoardView());
-		printHand(p.getHand());
-	}
-
-	public static void printHand(ArrayList<Card> hand)
-	{
-		System.out.print("[");
-		for(int i = 0; i < hand.size(); i++)
-		{
-			System.out.print(hand.get(i).getNumber());
-			if(i != hand.size() - 1)
-			{
-				System.out.print("  ");
-			}
-		}
-		System.out.println("]");
 	}
 }
