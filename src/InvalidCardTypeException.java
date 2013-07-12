@@ -1,4 +1,4 @@
-public class InvalidCardTypeException extends RuntimeException
+public class InvalidCardTypeException extends InvalidCardException
 {
 	int type;
 

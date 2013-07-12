@@ -1,4 +1,4 @@
-public class InvalidCardNumberException extends RuntimeException
+public class InvalidCardNumberException extends InvalidCardException
 {
 	private int number;
 
