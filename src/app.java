@@ -15,15 +15,19 @@ public class app extends JFrame implements ActionListener
 		setVisible(true);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setBackground(Color.BLACK);
+		this.getContentPane().setBackground(Color.BLACK);
 		container = getContentPane();
-		container.setLayout(new FlowLayout());
+		container.invalidate();
+		container.validate();
+		container.repaint();
+		//container.setLayout(new FlowLayout());
 		container.setBackground(Color.BLACK);
 	}
 
 	@Override
 	public void paint(Graphics g)
 	{
-
+		setBackground(Color.BLACK);
 		System.out.println("Paint method called! g: " +  g);
 		g.setColor(Color.GREEN);
 		for(int i = 0; i < 10; i++)

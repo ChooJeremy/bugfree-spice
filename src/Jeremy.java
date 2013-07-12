@@ -720,7 +720,6 @@ public abstract class Jeremy
 		switch(array.getClass().getComponentType().toString())
 		{
 			case "boolean":
-				System.out.println("boolean");
 				boolean[] booleans = (boolean[]) array;
 				boolean temp1;
 				for(int i = booleans.length; i > 0; i--)
@@ -732,7 +731,6 @@ public abstract class Jeremy
 				}
 				break;
 			case "byte":
-				System.out.println("byte");
 				byte[] bytes = (byte[]) array;
 				byte temp2;
 				for(int i = bytes.length; i > 0; i--)
@@ -744,7 +742,6 @@ public abstract class Jeremy
 				}
 				break;
 			case "char":
-				System.out.println("char");
 				char[] chars = (char[]) array;
 				char temp3;
 				for(int i = chars.length; i > 0; i--)
@@ -756,7 +753,6 @@ public abstract class Jeremy
 				}
 				break;
 			case "short":
-				System.out.println("short");
 				short[] shorts = (short[]) array;
 				short temp4;
 				for(int i = shorts.length; i > 0; i--)
@@ -768,7 +764,6 @@ public abstract class Jeremy
 				}
 				break;
 			case "int":
-				System.out.println("int");
 				int[] ints = (int[]) array;
 				int temp5;
 				for(int i = ints.length; i > 0; i--)
@@ -780,7 +775,6 @@ public abstract class Jeremy
 				}
 				break;
 			case "long":
-				System.out.println("long");
 				long[] longs = (long[]) array;
 				long temp6;
 				for(int i = longs.length; i > 0; i--)
@@ -792,7 +786,6 @@ public abstract class Jeremy
 				}
 				break;
 			case "float":
-				System.out.println("float");
 				float[] floats = (float[]) array;
 				float temp7;
 				for(int i = floats.length; i > 0; i--)
@@ -804,7 +797,6 @@ public abstract class Jeremy
 				}
 				break;
 			case "double":
-				System.out.println("double");
 				double[] doubles = (double[]) array;
 				double temp8;
 				for(int i = doubles.length; i > 0; i--)
@@ -889,7 +881,7 @@ public abstract class Jeremy
 		String result = "[";
 		for(Object anArray : array)
 		{
-			result = result + anArray + ", ";
+			result = result + arrayToString(anArray, false) + ", ";
 		}
 		if(array.length != 0)
 		{
@@ -903,16 +895,35 @@ public abstract class Jeremy
 	 * Converts a primitive array to a String for printing. String is in the following format:
 	 * "[" + array[0] + ", " + array[1] + ", " + array[2] + ", " + array[3] + ... + "]"
 	 * It does not matter whether it is an int[], double[], char[] etc, the program will find out the type and cast it automatically.
-	 * For an array of primitive objects, there is an overloaded method that takes in an object.
+	 * For an array of primitive objects, there is an overloaded method that takes in an object. There is an overloaded method,
+	 * typically called internally, that does not print the error message if the object is not a true array.
 	 *
 	 * @param array The array to be converted into a String
 	 * @return the result, String.
 	 */
 	public static String arrayToString(Object array)
 	{
+		return arrayToString(array, true);
+	}
+
+	/**
+	 * Converts a primitive array to a String for printing. String is in the following format:
+	 * "[" + array[0] + ", " + array[1] + ", " + array[2] + ", " + array[3] + ... + "]"
+	 * It does not matter whether it is an int[], double[], char[] etc, the program will find out the type and cast it automatically.
+	 * For an array of primitive objects, there is an overloaded method that takes in an object.
+	 *
+	 * @param array The array to be converted into a String
+	 * @param printError Whether you would like to print
+	 * @return the result, String.
+	 */
+	public static String arrayToString(Object array, boolean printError)
+	{
 		if(!array.getClass().isArray())
 		{
-			System.out.println("Oops! The object submitted in arrayToString is not really an array! It's " + array.toString());
+			if(printError)
+			{
+				System.out.println("Oops! The object submitted in arrayToString is not really an array! It's " + array.toString());
+			}
 			return array.toString();
 		}
 		//boolean, byte, char, short, int, long, float, and double
@@ -924,7 +935,7 @@ public abstract class Jeremy
 				boolean[] booleans = (boolean[]) array;
 				for(boolean aBoolean : booleans)
 				{
-					result = result + aBoolean + ", ";
+					result = result + arrayToString(aBoolean, false) + ", ";
 				}
 				lengthOfArray = booleans.length;
 				break;
@@ -932,7 +943,7 @@ public abstract class Jeremy
 				byte[] bytes = (byte[]) array;
 				for(byte aByte : bytes)
 				{
-					result = result + aByte + ", ";
+					result = result + arrayToString(aByte, false) + ", ";
 				}
 				lengthOfArray = bytes.length;
 				break;
@@ -940,7 +951,7 @@ public abstract class Jeremy
 				char[] chars = (char[]) array;
 				for(char aChar : chars)
 				{
-					result = result + aChar + ", ";
+					result = result + arrayToString(aChar, false) + ", ";
 				}
 				lengthOfArray = chars.length;
 				break;
@@ -948,7 +959,7 @@ public abstract class Jeremy
 				short[] shorts = (short[]) array;
 				for(short aShort : shorts)
 				{
-					result = result + aShort + ", ";
+					result = result + arrayToString(aShort, false) + ", ";
 				}
 				lengthOfArray = shorts.length;
 				break;
@@ -956,7 +967,7 @@ public abstract class Jeremy
 				int[] ints = (int[]) array;
 				for(int aInt : ints)
 				{
-					result = result + aInt + ", ";
+					result = result + arrayToString(aInt, false) + ", ";
 				}
 				lengthOfArray = ints.length;
 				break;
@@ -964,7 +975,7 @@ public abstract class Jeremy
 				long[] longs = (long[]) array;
 				for(long aLong : longs)
 				{
-					result = result + aLong + ", ";
+					result = result + arrayToString(aLong, false) + ", ";
 				}
 				lengthOfArray = longs.length;
 				break;
@@ -972,7 +983,7 @@ public abstract class Jeremy
 				float[] floats = (float[]) array;
 				for(float aFloat : floats)
 				{
-					result = result + aFloat + ", ";
+					result = result + arrayToString(aFloat, false) + ", ";
 				}
 				lengthOfArray = floats.length;
 				break;
@@ -980,14 +991,18 @@ public abstract class Jeremy
 				double[] doubles = (double[]) array;
 				for(double aDouble : doubles)
 				{
-					result = result + aDouble + ", ";
+					result = result + arrayToString(aDouble, false) + ", ";
 				}
 				lengthOfArray = doubles.length;
 				break;
 			default:
-				System.out.println("Oops! arrayToString noted that the object was an array, " +
-						"but it was neither a boolean, byte, char, short, int, long, float, and double array! Not too sure how to handle this...");
-				return array.toString();
+				Object[] objects = (Object[]) array;
+				for(Object anObject : objects)
+				{
+					result = result + arrayToString(anObject, false) + ", ";
+				}
+				lengthOfArray = objects.length;
+				break;
 		}
 		if(lengthOfArray != 0)
 		{
