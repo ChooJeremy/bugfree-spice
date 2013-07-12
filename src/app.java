@@ -11,7 +11,7 @@ public class app extends JFrame implements ActionListener
 
 	public app()
 	{
-		//Create the essentials
+		//Set the essentials
 		setTitle("App");
 		setSize(800, 600);
 		setVisible(true);
@@ -31,6 +31,7 @@ public class app extends JFrame implements ActionListener
 		gameStatus = new JLabel("Status stuff goes here", SwingConstants.CENTER);
 		gameStatus.setFont(new Font("Calibri", Font.PLAIN, 20));
 		gameStatus.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5, true));
+		gameStatus.setToolTipText("Status message");
 		gameBoard = new JPanel();
 		gameBoard.setLayout(new GridLayout(3, 3));
 		JButton jb;
@@ -38,6 +39,7 @@ public class app extends JFrame implements ActionListener
 		{
 			jb = new JButton("" + i);
 			jb.setFont(new Font("Calibri", Font.PLAIN, 18));
+			jb.addActionListener(this);
 			gameBoard.add(jb);
 		}
 		gameBoard.setBackground(Color.CYAN);
@@ -47,6 +49,8 @@ public class app extends JFrame implements ActionListener
 		{
 			jb = new JButton("" + i);
 			jb.setFont(new Font("Calibri", Font.PLAIN, 18));
+			jb.setBackground(Color.WHITE);
+			jb.addActionListener(this);
 			playerBoard.add(jb);
 		}
 		playerBoard.setBackground(Color.MAGENTA);
@@ -55,12 +59,47 @@ public class app extends JFrame implements ActionListener
 		container.add(gameBoard);
 		container.add(playerBoard);
 
+		//Fill the board
+		Side8Wrapper s8w = new Side8Wrapper();
+		s8w.getBoard().createRandomBoard();
+		fillBoard(s8w.getBoard());
+	}
+
+	public void fillBoard(Side8Board s8b)
+	{
+		int[][] board = s8b.getBoard();
+		for(int i = 0; i < board.length; i++)
+		{
+			for(int j = 0; j < board[i].length; j++)
+			{
+				JButton jb = (JButton) gameBoard.getComponent(i*3+j);
+				if(board[i][j] < 0)
+				{
+					jb.setText("" + (board[i][j] * -1));
+					jb.setBackground(Color.RED);
+				}
+				else if(board[i][j] > 0)
+				{
+					jb.setText("" + board[i][j]);
+					jb.setBackground(Color.GREEN);
+				}
+				if((i==1&&j==1)||board[i][j] == 0)
+				{
+					jb.setText("" + board[i][j]);
+					jb.setBackground(Color.LIGHT_GRAY);
+				}
+			}
+		}
+		gameStatus.setText("<html><pre>" + s8b.getBoardView() + "</pre></html>");
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		//To change body of implemented methods use File | Settings | File Templates.
+		System.out.println("Action performed!");
+		Side8Board sb = new Side8Board();
+		sb.createRandomBoard();
+		fillBoard(sb);
 	}
 
 	public static void main(String[] args)

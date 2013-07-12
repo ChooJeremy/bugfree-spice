@@ -2,12 +2,14 @@ import java.util.*;
 
 public class Side8Board
 {
-	int[][] board;
+	private int[][] board;
 
 	public Side8Board()
 	{
 		board = new int[3][3];
 	}
+
+	public int[][] getBoard() {return board; }
 
 	public void createRandomBoard()
 	{
@@ -46,7 +48,7 @@ public class Side8Board
 
 	public String getBoardView()
 	{
-		String result = "-----------------\n";
+		String result = "---------------------------------\n";
 		for(int i = 0; i < board.length; i++)
 		{
 			result += "|\t";
@@ -56,7 +58,7 @@ public class Side8Board
 			}
 			result += "|\n";
 		}
-		result += "-----------------";
+		result += "---------------------------------";
 		return result;
 	}
 
