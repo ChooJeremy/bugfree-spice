@@ -46,6 +46,51 @@ public class Side8Board
 		board[1][1] = random.nextInt(10) + random.nextInt(10);
 	}
 
+	public void setBoardNumber(int location, int number)
+	{
+		switch(location)
+		{
+			case 0:
+			case 1:
+			case 2:
+				board[0][location] = number;
+				break;
+			case 3:
+			case 4:
+			case 5:
+				board[1][location - 3] = number;
+				break;
+			case 6:
+			case 7:
+			case 8:
+				board[2][location - 6] = number;
+				break;
+			default:
+				throw new RuntimeException("Invalid location " + location);
+		}
+	}
+
+	public int getBoardNumber(int location)
+	{
+		switch(location)
+		{
+			case 0:
+			case 1:
+			case 2:
+				return board[0][location];
+			case 3:
+			case 4:
+			case 5:
+				return board[1][location - 3];
+			case 6:
+			case 7:
+			case 8:
+				return board[2][location - 6];
+			default:
+				throw new RuntimeException("Invalid location " + location);
+		}
+	}
+
 	public String getBoardView()
 	{
 		String result = "---------------------------------\n";

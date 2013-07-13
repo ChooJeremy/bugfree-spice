@@ -1,8 +1,12 @@
+import java.util.ArrayList;
+
 public class Side8Wrapper
 {
 	private Participant player;
 	private Participant opponent;
 	private Side8Board board;
+	//Attributes to store the cards
+	private ArrayList<Integer> cardsBeingUsed;
 
 	public Participant getPlayer() {return player; }
 	public Participant getOpponent() {return opponent; }
@@ -13,13 +17,13 @@ public class Side8Wrapper
 		board = new Side8Board();
 		player = new Participant("Player");
 		opponent = new Participant("Opponent");
-		Deck playerHand = initDeck(1);
+		Deck playerHand = initDeck(4);
 		playerHand.shuffle();
 		for(int i = 0; i < 7; i++)
 		{
 			player.getCard(playerHand.draw());
 		}
-		playerHand = initDeck(1);
+		playerHand = initDeck(4);
 		playerHand.shuffle();
 		for(int i = 0; i < 7; i++)
 		{
@@ -27,6 +31,8 @@ public class Side8Wrapper
 		}
 		player.sortHand();
 		opponent.sortHand();
+
+		cardsBeingUsed = new ArrayList<>();
 	}
 
 	public Side8Wrapper(Participant p, Participant o, Side8Board b)
@@ -34,6 +40,57 @@ public class Side8Wrapper
 		player = p;
 		opponent = o;
 		board = b;
+		cardsBeingUsed = new ArrayList<>();
+	}
+
+	public void setCardNo(int number)
+	{
+		if(cardsBeingUsed.size() == 0)
+		{
+			cardsBeingUsed.add(number);
+		}
+		else
+		{
+			cardsBeingUsed.remove(0);
+			cardsBeingUsed.add(0, number);
+		}
+	}
+
+	public Integer getCardNo()
+	{
+		return cardsBeingUsed.size() == 0 ? null : cardsBeingUsed.get(0);
+	}
+
+	public boolean addTargetSelection(int number)
+	{
+		if(cardsBeingUsed.size() != 0)
+		{
+			cardsBeingUsed.add(number);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public ArrayList<Integer> getTargetSelection()
+	{
+		if(cardsBeingUsed.size() == 0)
+		{
+			return null;
+		}
+		ArrayList<Integer> result = new ArrayList<>();
+		for(int i = 1; i < cardsBeingUsed.size(); i++)
+		{
+			result.add(cardsBeingUsed.get(i));
+		}
+		return result;
+	}
+
+	public void finishSelection()
+	{
+		cardsBeingUsed.clear();
 	}
 
 	public static Deck initDeck(int totalRepeats)
@@ -48,5 +105,30 @@ public class Side8Wrapper
 			}
 		}
 		return deck;
+	}
+
+	public String getEverythingInString()
+	{
+		String result = "[";
+		for(int i = 0; i < opponent.getHand().size(); i++)
+		{
+			result += opponent.getHand().get(i).getNumber();
+			if(i != opponent.getHand().size() - 1)
+			{
+				result += "  ";
+			}
+		}
+		result += "]\n";
+		result += this.getBoard().getBoardView() + "\n[";
+		for(int i = 0; i < player.getHand().size(); i++)
+		{
+			result += player.getHand().get(i).getNumber();
+			if(i != player.getHand().size() - 1)
+			{
+				result += "  ";
+			}
+		}
+		result += "]";
+		return result;
 	}
 }
