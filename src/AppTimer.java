@@ -6,6 +6,7 @@ public class AppTimer implements ActionListener
 	private String methodToCallLater;
 	private app reference;
 	private Timer timer;
+	public static String performOpponentsTurn = "performopponentsturn";
 
 	public AppTimer(app referenceBack, String methodToCall, int timeToWait)
 	{

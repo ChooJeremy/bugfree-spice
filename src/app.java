@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.border.Border;
 
 public class app extends JFrame implements ActionListener
 {
@@ -11,6 +12,8 @@ public class app extends JFrame implements ActionListener
 	private Container gameBoard, playerBoard;
 	private Side8Wrapper s8w;
 	private boolean isEnemyTurn;
+	private Border originalBorder;
+	private boolean playerStartFirst;
 
 	public app()
 	{
@@ -39,7 +42,7 @@ public class app extends JFrame implements ActionListener
 		//Middle part: The game board. We create a border so that it is sqare, and populate it with 9 buttons
 		gameBoard = new JPanel();
 		((JComponent) gameBoard).setBorder(BorderFactory.createEmptyBorder(0, 188, 0, 188));
-		gameBoard.setLayout(new GridLayout(3, 3));
+		gameBoard.setLayout(new GridLayout(3, 3, 1, 1));
 		JButton jb;
 		for(int i = 0; i < 9; i++)
 		{
@@ -52,7 +55,7 @@ public class app extends JFrame implements ActionListener
 
 		//Bottom part: the player's hand. The starting is 7 cards. We populate it with 7 buttons
 		playerBoard = new JPanel();
-		playerBoard.setLayout(new GridLayout(1, 7));
+		playerBoard.setLayout(new GridLayout(1, 7, 1, 0));
 		for(int i = 0; i < 7; i++)
 		{
 			jb = new JButton("" + i);
@@ -62,6 +65,9 @@ public class app extends JFrame implements ActionListener
 			jb.addActionListener(this);
 			playerBoard.add(jb);
 		}
+
+		//Cache the border of the original buttons so we can set it back if we ever change it
+		originalBorder = ((JComponent) playerBoard.getComponent(0)).getBorder();
 
 		container.add(gameStatus);
 		container.add(gameBoard);
@@ -78,7 +84,8 @@ public class app extends JFrame implements ActionListener
 		}
 
 		//Player starts first
-		isEnemyTurn = false;
+		playerStartFirst = true;
+		allocateNextTurn();
 	}
 
 	public void fillBoard()
@@ -132,10 +139,24 @@ public class app extends JFrame implements ActionListener
 		{
 			if(startOfGame)
 			{
-				//It is the start of the game, where players are setting the number cards
+				//It is the start of the game, where players are setting the numbers on the board
+
+				//Set the card and show the user that is has been selected
 				s8w.setCardNo(selectedCardLocation);
-				gameStatus.setText("Card selected: " + source.getText());
-				System.out.println("Please select a place on the board to send your card to.");
+				((JButton) e.getSource()).setBorder(BorderFactory.createLoweredBevelBorder());
+				deselectEverything();
+				if(s8w.getPlayer().getHand().size() > 3)
+				{
+					//The player is selecting something to send to the board
+					gameStatus.setText("Card selected: " + source.getText());
+					//Wait for the player to choose which position to send to
+				}
+				else
+				{
+					//Neutral decision
+					gameStatus.setText("<html><pre>Card chosen: " + source.getText() + "\nWaiting for opponent...</pre></html>");
+					allocateNextTurn();
+				}
 			}
 			else
 			{
@@ -145,9 +166,30 @@ public class app extends JFrame implements ActionListener
 		}
 		else
 		{
+			//Player has not selected a card
 			if(s8w.getCardNo() == null)
 			{
-				gameStatus.setText("Please select a card to use first!");
+				//If setting neutrals
+				int playerMoves = 0, opponentMoves = 0;
+				for(Component c : gameBoard.getComponents())
+				{
+					if(c.getBackground() == Color.RED)
+					{
+						opponentMoves++;
+					}
+					else if(c.getBackground() == Color.GREEN)
+					{
+						playerMoves++;
+					}
+				}
+				if(playerMoves == 4 && opponentMoves == 4)
+				{
+					gameStatus.setText("Please select a card to compare!");
+				}
+				else
+				{
+					gameStatus.setText("Please select a card to use first!");
+				}
 			}
 			else
 			{
@@ -159,7 +201,7 @@ public class app extends JFrame implements ActionListener
 						gameStatus.setText("You can't send a card to the middle square, that square must be neutral!");
 						return;
 					}
-					//Or something tha thas already been selected
+					//Or something that has already been selected
 					else if(Integer.parseInt(((JButton) gameBoard.getComponent(selectedCardLocation)).getText()) != 0)
 					{
 						gameStatus.setText("That place has already been set. Please set another square.");
@@ -182,12 +224,12 @@ public class app extends JFrame implements ActionListener
 					//Update the final stuff
 					gameStatus.setText(playerCardNo + " sent to board.");
 					s8w.finishSelection();
-					new AppTimer(this, "performOpponentsTurn", 2000);
-					isEnemyTurn = true;
+					deselectEverything();
+					allocateNextTurn();
 				}
 				else
 				{
-
+					//Player has selected a board to use a game card on.
 				}
 			}
 		}
@@ -204,26 +246,61 @@ public class app extends JFrame implements ActionListener
 		{
 			int cardToUse = s8w.getOpponent().getHand().get(0).getNumber();
 
-			//Run through until you find a square that's available. Flip a coin. If heads, pick that. Otherwise, continue
-			Random random = new Random();
-			boolean hasSetACard = false;
-			while(!hasSetACard)
+			//Find out how many moves the player has made, and how many moves the opponent has made
+			int playerMoves = 0, opponentMoves = 0;
+			for(Component c : gameBoard.getComponents())
 			{
-				for(int i = 0; i < gameBoard.getComponentCount(); i++)
+				if(c.getBackground() == Color.RED)
 				{
-					if(i != 4 && s8w.getBoard().getBoardNumber(i) == 0)
-					{
-						if(random.nextBoolean())
-						{
-							hasSetACard = true;
-							//Set to location
-							((JButton) gameBoard.getComponent(i)).setText("" + cardToUse);
-							gameBoard.getComponent(i).setBackground(Color.RED);
-							s8w.getBoard().setBoardNumber(i, cardToUse * -1);
+					opponentMoves++;
+				}
+				else if(c.getBackground() == Color.GREEN)
+				{
+					playerMoves++;
+				}
+			}
 
-							//Remove the card
-							s8w.getOpponent().removeCard(new Card(cardToUse, Card.DIAMOND));
-							break;
+			if(playerMoves == 4 && opponentMoves == 4)           //Neutral setting time
+			{
+				//Use the card already decided above (highest card in opponent's hand).
+				int playerCardNo = Integer.parseInt(((JButton) playerBoard.getComponent(s8w.getCardNo())).getText());
+				int neutrals = Math.abs(playerCardNo - cardToUse);
+				s8w.getBoard().setBoardNumber(4, s8w.getBoard().getBoardNumber(4) + neutrals);
+				((JButton) gameBoard.getComponent(4)).setText("" + s8w.getBoard().getBoardNumber(4));
+
+				//Remove the cards
+				s8w.getPlayer().removeCard(new Card(playerCardNo, Card.DIAMOND));
+				playerBoard.remove(s8w.getCardNo());
+				playerBoard.add(new JPanel(), s8w.getCardNo());
+				s8w.getOpponent().removeCard(new Card(cardToUse, Card.DIAMOND));
+				s8w.finishSelection();
+
+				gameStatus.setText("<html><pre>Opponent chose card " + cardToUse + ", your card was " + playerCardNo + "\nNeutrals added: " + neutrals + "</pre></html>");
+			}
+			else
+			{
+				//Set the cards on the board.
+				//Run through until you find a square that's available. Flip a coin. If heads, pick that. Otherwise, continue
+				Random random = new Random();
+				boolean hasSetACard = false;
+				while(!hasSetACard)
+				{
+					for(int i = 0; i < gameBoard.getComponentCount(); i++)
+					{
+						if(i != 4 && s8w.getBoard().getBoardNumber(i) == 0)
+						{
+							if(random.nextBoolean())
+							{
+								hasSetACard = true;
+								//Set to location
+								((JButton) gameBoard.getComponent(i)).setText("" + cardToUse);
+								gameBoard.getComponent(i).setBackground(Color.RED);
+								s8w.getBoard().setBoardNumber(i, cardToUse * -1);
+
+								//Remove the card
+								s8w.getOpponent().removeCard(new Card(cardToUse, Card.DIAMOND));
+								break;
+							}
 						}
 					}
 				}
@@ -233,8 +310,165 @@ public class app extends JFrame implements ActionListener
 		{
 			//Make a move
 		}
-		isEnemyTurn = false;
-		dump();
+		allocateNextTurn();
+	}
+
+	public void allocateNextTurn()
+	{
+		boolean startOfGame = ((GridLayout) playerBoard.getLayout()).getColumns() == 7;
+		if(startOfGame)
+		{
+			//Find out how many moves the player has made, and how many moves the opponent has made
+			int playerMoves = 0, opponentMoves = 0;
+			for(Component c : gameBoard.getComponents())
+			{
+				if(c.getBackground() == Color.RED)
+				{
+					opponentMoves++;
+				}
+				else if(c.getBackground() == Color.GREEN)
+				{
+					playerMoves++;
+				}
+			}
+
+			if(playerMoves == 4 && opponentMoves == 4)
+			{
+				if(s8w.getPlayer().getHand().size() > 1)
+				{
+					//Time to set the neutrals!
+					if(s8w.getCardNo() == null)
+					{
+						isEnemyTurn = false;
+						//Don't immediately change, append
+						if(s8w.getPlayer().getHand().size() == 2)
+						{
+							gameStatus.setText(gameStatus.getText().substring(0, gameStatus.getText().length() - 13) +
+									"\nSelect a card to compare with the opponent's card.</pre></html>");
+						}
+						else
+						{
+							gameStatus.setText("Select a card to compare with the opponent's card.");
+						}
+					}
+					else
+					{
+						new AppTimer(this, AppTimer.performOpponentsTurn, 500);
+					}
+					return;
+				}
+				else
+				{
+					//Compare the cards to see who starts first
+				}
+			}
+
+			if(playerStartFirst)
+			{
+				//1P, 2O, 2P, 2O, 1P
+				switch(playerMoves)
+				{
+					//In these cases, it's definitely the player's turn
+					case 0:
+					case 2:
+						isEnemyTurn = false;
+						gameStatus.setText("<html><pre>It's your turn! Pick a card to send to the board!</pre></html>");
+						break;
+					//Unsure, must check: May be after or before an opponent's move
+					case 1:
+					case 3:
+						isEnemyTurn = true;
+						switch(opponentMoves)
+						{
+							//Player has made 1 move, opponent's turn
+							case 0:
+								new AppTimer(this, AppTimer.performOpponentsTurn, 2000);
+								break;
+							//Player has made 1 move, opponent 1 move, opponent's 2nd turn (in a row)
+							//or player has made 3 moves, opponent 3 moves, opponent's 2nd turn (in a row)
+							case 1:
+							case 3:
+								//Let's not force the player to wait a long time
+								new AppTimer(this, AppTimer.performOpponentsTurn, 200);
+								break;
+							//Player has made 1-3 moves, opponent 2 moves.
+							case 2:
+								if(playerMoves == 1)
+								{
+									isEnemyTurn = false;
+									gameStatus.setText("<html><pre>It's your turn! Pick a card to send to the board!</pre></html>");
+								}
+								else
+								{
+									new AppTimer(this, AppTimer.performOpponentsTurn, 2000);
+								}
+								break;
+							//Opponent has finished placing everything, player's last move.
+							case 4:
+								isEnemyTurn = false;
+								gameStatus.setText("<html><pre>It's your turn! Pick a card to send to the board!</pre></html>");
+								break;
+						}
+						break;
+				}
+			}
+			else        //enemy starts first
+			{
+				//Essentially the same as player, but the playerMoves and opponent moves swapped.
+				switch(opponentMoves)
+				{
+					//In these cases, it's definitely the opponent's turn
+					case 0:
+						isEnemyTurn = true;
+						new AppTimer(this, AppTimer.performOpponentsTurn, 2000);
+						break;
+					case 2:
+						isEnemyTurn = true;
+						//Let's not force the player to wait a long time
+						new AppTimer(this, AppTimer.performOpponentsTurn, 200);
+						break;
+					//Unsure, must check: May be after or before a player's move
+					case 1:
+					case 3:
+						isEnemyTurn = false;
+						switch(playerMoves)
+						{
+							//Opponent has made 1 move, player's turn
+							case 0:
+								gameStatus.setText("<html><pre>It's your turn! Pick a card to send to the board!</pre></html>");
+								break;
+							//Opponent has made 1 move, player 1 move, player's 2nd turn (in a row)
+							//or opponent has made 3 moves, player 3 moves, player's 2nd turn (in a row)
+							case 1:
+							case 3:
+								gameStatus.setText("<html><pre>It's your turn! Pick a card to send to the board!</pre></html>");
+								break;
+							//Opponent has made 1-3 moves, player 2 moves.
+							case 2:
+								if(opponentMoves == 1)
+								{
+									isEnemyTurn = true;
+									new AppTimer(this, AppTimer.performOpponentsTurn, 2000);
+								}
+								else
+								{
+									gameStatus.setText("<html><pre>It's your turn! Pick a card to send to the board!</pre></html>");
+								}
+								break;
+							//Player has finished placing everything, opponent's last move.
+							case 4:
+								isEnemyTurn = true;
+								new AppTimer(this, AppTimer.performOpponentsTurn, 2000);
+								break;
+						}
+						break;
+				}
+			}
+		}
+		else
+		{
+
+		}
 	}
 
 	public void dump()
@@ -243,9 +477,29 @@ public class app extends JFrame implements ActionListener
 		gameStatus.setText("<html><pre>" + s8w.getEverythingInString() + "</pre></html>");
 	}
 
+	public void deselectEverything()
+	{
+		//Deselect all previous cards
+		for(Component c : playerBoard.getComponents())
+		{
+			if(c instanceof JButton)
+			{
+				((JButton) c).setBorder(originalBorder);
+			}
+		}
+
+		//Deselect all the board stuff
+		for(Component c : gameBoard.getComponents())
+		{
+			if(c instanceof JButton)
+			{
+				((JButton) c).setBorder(originalBorder);
+			}
+		}
+	}
+
 	public static void main(String[] args)
 	{
-		System.out.println("Creating gui...");
 		new app();
 	}
 }
