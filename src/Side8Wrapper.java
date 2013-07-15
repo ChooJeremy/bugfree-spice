@@ -17,6 +17,20 @@ public class Side8Wrapper
 		board = new Side8Board();
 		player = new Participant("Player");
 		opponent = new Participant("Opponent");
+		cardsBeingUsed = new ArrayList<>();
+		restart();
+	}
+
+	public Side8Wrapper(Participant p, Participant o, Side8Board b)
+	{
+		player = p;
+		opponent = o;
+		board = b;
+		cardsBeingUsed = new ArrayList<>();
+	}
+
+	public void restart()
+	{
 		Deck playerHand = initDeck(4);
 		playerHand.shuffle();
 		for(int i = 0; i < 7; i++)
@@ -31,16 +45,6 @@ public class Side8Wrapper
 		}
 		player.sortHand();
 		opponent.sortHand();
-
-		cardsBeingUsed = new ArrayList<>();
-	}
-
-	public Side8Wrapper(Participant p, Participant o, Side8Board b)
-	{
-		player = p;
-		opponent = o;
-		board = b;
-		cardsBeingUsed = new ArrayList<>();
 	}
 
 	public void setCardNo(int number)

@@ -2,7 +2,6 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.Timer;
 import javax.swing.border.Border;
 
 public class app extends JFrame implements ActionListener
@@ -86,6 +85,7 @@ public class app extends JFrame implements ActionListener
 		//Player starts first
 		playerStartFirst = true;
 		allocateNextTurn();
+		listenForInput();
 	}
 
 	public void fillBoard()
@@ -314,7 +314,9 @@ public class app extends JFrame implements ActionListener
 		}
 		else
 		{
-			//Make a move
+			//Opponent should now play a card.
+			System.out.println("Enemy does stuff!");
+			isEnemyTurn = false;
 		}
 		allocateNextTurn();
 	}
@@ -359,13 +361,61 @@ public class app extends JFrame implements ActionListener
 					}
 					else
 					{
+						isEnemyTurn = true;
 						new AppTimer(this, AppTimer.performOpponentsTurn, 500);
 					}
 					return;
 				}
 				else
 				{
-					//Compare the cards to see who starts first
+					int playerCard = s8w.getPlayer().getHand().get(0).getNumber();
+					int opponentCard = s8w.getOpponent().getHand().get(0).getNumber();
+					if(playerCard > opponentCard)
+					{
+						gameStatus.setText(gameStatus.getText().substring(0, gameStatus.getText().length() - 13) +
+								"\nOpponent's card: " + opponentCard + " Yours: " + playerCard + ". You start first.</pre></html>");
+						isEnemyTurn = false;
+					}
+					else if(playerCard < opponentCard)
+					{
+						gameStatus.setText(gameStatus.getText().substring(0, gameStatus.getText().length() - 13) +
+								"\nOpponent's card: " + opponentCard + " Yours: " + playerCard + ". You start second.</pre></html>");
+						isEnemyTurn = true;
+					}
+					else
+					{
+						//If check is already done before
+						if(!gameStatus.getText().substring(0, 5).equals("Right"))
+						{
+							gameStatus.setText(gameStatus.getText().substring(0, gameStatus.getText().length() - 13) +
+									"\nOpponent's card: " + opponentCard + " Yours: " + playerCard + ". It's a tie!</pre></html>");
+							new AppTimer(this, AppTimer.performTieBreaker, 1500);
+							return;
+						}
+					}
+					//Remove the cards from the player's hands
+					s8w.getPlayer().removeCard(new Card(playerCard, Card.DIAMOND));
+					s8w.getOpponent().removeCard(new Card(opponentCard, Card.DIAMOND));
+					//Create the game cards and give them to the players
+
+					//Perform the required layout changes (Changing the player's board to 5, etc, dealing the cards)
+					playerBoard.removeAll();
+					playerBoard.setLayout(new GridLayout(1, 5, 1, 0));
+					JButton jb;
+					for(int i = 0; i < 5; i++)
+					{
+						jb = new JButton("<html>Card " + (i+1) + "<br />Description Description Description Description Description Description</html>");
+						jb.setFont(new Font("Calibri", Font.PLAIN, 18));
+						jb.setBackground(Color.WHITE);
+						jb.setActionCommand("" + i);
+						jb.addActionListener(this);
+						playerBoard.add(jb);
+					}
+					//Run opponent's move if it's the opponent's turn, otherwise wait for user input.
+					if(isEnemyTurn)
+					{
+						new AppTimer(this, AppTimer.allocateNextTurn, 1000);
+					}
 				}
 			}
 
@@ -473,8 +523,77 @@ public class app extends JFrame implements ActionListener
 		}
 		else
 		{
-
+			//Give the next turn to the appropriate player.
 		}
+	}
+
+	public void listenForInput()
+	{
+		Scanner scanner = new Scanner(System.in);
+		String userInput;
+		boolean exit = false;
+		System.out.println("Ready.");
+		do
+		{
+			userInput = scanner.nextLine().toLowerCase();
+			switch(userInput)
+			{
+				case "randomboard":
+					s8w.restart();
+					s8w.getBoard().createRandomBoard();
+					fillBoard();
+					while(s8w.getPlayer().handSize() > 1)
+					{
+						s8w.getPlayer().removeCard(s8w.getPlayer().getHand().get(0));
+					}
+					while(s8w.getOpponent().handSize() > 1)
+					{
+						s8w.getOpponent().removeCard(s8w.getOpponent().getHand().get(0));
+					}
+
+					//Act as if it's the start of the game by ensuring that the playerboard has 7 components
+					playerBoard.removeAll();
+					playerBoard.setLayout(new GridLayout(1, 7, 1, 0));
+					for(int i = 0; i < 6; i++)
+					{
+						playerBoard.add(new JPanel());
+					}
+					JButton jb = new JButton("" + s8w.getPlayer().getHand().get(0).getNumber());
+					jb.setFont(new Font("Calibri", Font.PLAIN, 18));
+					jb.setBackground(Color.WHITE);
+					jb.setActionCommand("" + 7);
+					jb.addActionListener(this);
+					playerBoard.add(jb);
+
+					System.out.println("Done.");
+					allocateNextTurn();
+					break;
+				case "instant":
+					AppTimer.instant = true;
+					System.out.println("Set.");
+					break;
+				case "uninstant":
+					AppTimer.instant = false;
+					System.out.println("Unset");
+				case "exit":
+					exit = true;
+					this.dispose();
+					break;
+				default:
+					System.out.println("Unrecognized input. Please try again.");
+					break;
+			}
+		} while (!exit);
+	}
+
+	public void performTieBreaker()
+	{
+		//Right now, player always wins!
+		isEnemyTurn = false;
+		gameStatus.setText("Right now, player always wins!");
+		//If you change this gameStatus, make sure you change the one at the AllocateNextTurn decision when the condition
+		//opponent card == player card is true
+		new AppTimer(this, AppTimer.allocateNextTurn, 1000);
 	}
 
 	public void dump()

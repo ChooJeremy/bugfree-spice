@@ -7,7 +7,9 @@ public class AppTimer implements ActionListener
 	private app reference;
 	private Timer timer;
 	public static String performOpponentsTurn = "performopponentsturn";
-	public static boolean instant = true;
+	public static String allocateNextTurn = "allocatenextturn";
+	public static String performTieBreaker = "performtiebreaker";
+	public static boolean instant = false;
 
 	public AppTimer(app referenceBack, String methodToCall, int timeToWait)
 	{
@@ -25,6 +27,12 @@ public class AppTimer implements ActionListener
 		{
 			case "performopponentsturn":
 				reference.performOpponentsTurn();
+				break;
+			case "allocatenextturn":
+				reference.allocateNextTurn();
+				break;
+			case "performtiebreaker":
+				reference.performTieBreaker();
 				break;
 			default:
 				reference.print();
