@@ -7,13 +7,14 @@ public class AppTimer implements ActionListener
 	private app reference;
 	private Timer timer;
 	public static String performOpponentsTurn = "performopponentsturn";
+	public static boolean instant = true;
 
 	public AppTimer(app referenceBack, String methodToCall, int timeToWait)
 	{
 		methodToCallLater = methodToCall;
 		reference = referenceBack;
 		timer = new Timer(100, this);
-		timer.setInitialDelay(timeToWait);
+		timer.setInitialDelay(instant ? 1 : timeToWait);
 		timer.start();
 	}
 
@@ -24,6 +25,10 @@ public class AppTimer implements ActionListener
 		{
 			case "performopponentsturn":
 				reference.performOpponentsTurn();
+				break;
+			default:
+				reference.print();
+				reference.dump();
 				break;
 		}
 		timer.stop();

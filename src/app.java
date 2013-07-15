@@ -240,6 +240,12 @@ public class app extends JFrame implements ActionListener
 		performOpponentsTurn(((GridLayout) playerBoard.getLayout()).getColumns() == 7);
 	}
 
+	public void print()
+	{
+		System.out.println("Print: ");
+		System.out.println("Playerboard components: " + Jeremy.arrayToString(playerBoard.getComponents()).replace(", ", "\n"));
+	}
+
 	public void performOpponentsTurn(boolean isStartOfGame)
 	{
 		if(isStartOfGame)
@@ -271,7 +277,7 @@ public class app extends JFrame implements ActionListener
 				//Remove the cards
 				s8w.getPlayer().removeCard(new Card(playerCardNo, Card.DIAMOND));
 				playerBoard.remove(s8w.getCardNo());
-				playerBoard.add(new JPanel(), s8w.getCardNo());
+				playerBoard.add(new JPanel(), (int) s8w.getCardNo());
 				s8w.getOpponent().removeCard(new Card(cardToUse, Card.DIAMOND));
 				s8w.finishSelection();
 
@@ -474,7 +480,6 @@ public class app extends JFrame implements ActionListener
 	public void dump()
 	{
 		System.out.println(s8w.getEverythingInString());
-		gameStatus.setText("<html><pre>" + s8w.getEverythingInString() + "</pre></html>");
 	}
 
 	public void deselectEverything()
