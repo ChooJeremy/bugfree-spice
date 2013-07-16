@@ -11,6 +11,7 @@ public abstract class BaseCard
 	private String name;
 	private String description;
 	private int type;
+	private int change;
 
 	public BaseCard()
 	{

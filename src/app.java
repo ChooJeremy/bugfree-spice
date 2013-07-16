@@ -163,6 +163,8 @@ public class app extends JFrame implements ActionListener
 			{
 				//Game cards are being played
 				System.out.println("Game cards are being played!");
+				JButton btn = new JButton("This is a new button!");
+				container.add(btn);
 			}
 		}
 		else
@@ -537,13 +539,40 @@ public class app extends JFrame implements ActionListener
 		String userInput;
 		boolean exit = false;
 		boolean isDisposed = false;
-		//Randomboard, (un)instant, uninstant, repaint/revalidate, dispose, new, reboot, exit
+		JButton jb;
+		//newgame, Randomboard, (un)instant, repaint/revalidate, dispose, new, restart/reboot, exit
 		System.out.println("Ready.");
 		do
 		{
 			userInput = scanner.nextLine().toLowerCase();
 			switch(userInput)
 			{
+				case "newgame":
+					if(isDisposed)
+					{
+						System.out.println("lol");
+						break;
+					}
+					s8w.restart();
+					fillBoard();
+					//Fill the player's hands
+					//Act as if it's the start of the game by ensuring that the playerboard has 7 components
+					playerBoard.removeAll();
+					playerBoard.setLayout(new GridLayout(1, 7, 1, 0));
+					for(int i = 0; i < 7; i++)
+					{
+						jb = new JButton("" + s8w.getPlayer().getHand().get(i).getNumber());
+						jb.setFont(new Font("Calibri", Font.PLAIN, 18));
+						jb.setBackground(Color.WHITE);
+						jb.setActionCommand("" + i);
+						jb.addActionListener(this);
+						playerBoard.add(jb);
+					}
+					System.out.println("Done.");
+					//Decide who starts first
+					isEnemyTurn = false;
+					allocateNextTurn();
+					break;
 				case "randomboard":
 					if(isDisposed)
 					{
@@ -569,7 +598,7 @@ public class app extends JFrame implements ActionListener
 					{
 						playerBoard.add(new JPanel());
 					}
-					JButton jb = new JButton("" + s8w.getPlayer().getHand().get(0).getNumber());
+					jb = new JButton("" + s8w.getPlayer().getHand().get(0).getNumber());
 					jb.setFont(new Font("Calibri", Font.PLAIN, 18));
 					jb.setBackground(Color.WHITE);
 					jb.setActionCommand("" + 7);
@@ -596,7 +625,7 @@ public class app extends JFrame implements ActionListener
 					}
 					container.revalidate();
 					container.repaint();
-					System.out.println("Re-paint request sent.");
+					System.out.println(userInput + " request sent.");
 					break;
 				case "dispose":
 					if(isDisposed)
@@ -629,6 +658,7 @@ public class app extends JFrame implements ActionListener
 					}
 					break;
 				// ------------------------------ Fixed due to reliance on lack of break; statements. --------------------
+				case "restart":
 				case "reboot":
 					this.dispose();
 					isDisposed = true;
@@ -643,6 +673,7 @@ public class app extends JFrame implements ActionListener
 				// ------------------------------ Fixed due to reliance on lack of break; statements. --------------------
 				default:
 					System.out.println("Unrecognized input. Please try again.");
+					System.out.println("Accepted input: newgame, Randomboard, (un)instant, repaint/revalidate, dispose, new, restart/reboot, exit");
 					break;
 			}
 		} while (!exit);

@@ -31,6 +31,12 @@ public class Side8Wrapper
 
 	public void restart()
 	{
+		//Reset all the variables
+		board = new Side8Board();
+		player = new Participant("Player");
+		opponent = new Participant("Opponent");
+		cardsBeingUsed = new ArrayList<>();
+
 		Deck playerHand = initDeck(4);
 		playerHand.shuffle();
 		for(int i = 0; i < 7; i++)
