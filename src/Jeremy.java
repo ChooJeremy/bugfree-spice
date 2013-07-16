@@ -19,6 +19,8 @@ import java.util.*;
 
 public abstract class Jeremy
 {
+	static final int width = 50; // progress bar width in chars
+
 	/**
 	 * Main method for testing/doing random stuff
 	 *
@@ -27,39 +29,36 @@ public abstract class Jeremy
 	public static void main(String[] args)
 	{
 		Scanner scanner = new Scanner(System.in);
-		Queue<String> userInputs = new LinkedList<>();
-		String userInput;
-		System.out.println("Copy and paste attributes: ");
-		do
+		for (double progressPercentage = 0.0; progressPercentage < 1.0; progressPercentage += 0.01)
 		{
-			userInput = scanner.nextLine().trim();
-			if(!userInput.isEmpty() && !userInput.equals("exit"))
-			{
-				userInputs.add(userInput);
-			}
-		} while(!userInput.equals("exit"));
-		Queue<String> TODO = new LinkedList<>();
-		String[] inputs;
-		System.out.println("#region uselessCrap");
-		while(!userInputs.isEmpty())
-		{
-			userInput = userInputs.remove();
-			inputs = userInput.split(" ");
-			System.out.println("private " + inputs[1] + " _" + inputs[2] + ";");
-			TODO.add(userInput);
+			createProgress(progressPercentage);
+			Jeremy.pause(20);
 		}
-		System.out.println();
-		while(!TODO.isEmpty())
+	}
+
+	/**
+	 * Creates a progress bar that displays dots based on the progress percentage that is entered. As long as no other line is
+	 * printed in the meantime, this progress bar will override the previous progress bar printed. Warning: If your current line is
+	 * not a new line when the progress bar is generated, it will override your current line! This progress bar has a width of
+	 * characters equivalent to the final variable width.
+	 *
+	 * @param progressPercentage The percentage of how much progress has occured. This will be displayed along side the progress bar.
+	 *                           This value should be between 0 to 1. Any value lower then 0 will cause nothing to be displayed,
+	 *                           while anything higher will just display the full progress bar.
+	 */
+	public static void createProgress(double progressPercentage)
+	{
+		System.out.print("\r[");
+		int i = 0;
+		for (; i <= (int)(progressPercentage*width); i++)
 		{
-			inputs = TODO.remove().split(" ");
-			System.out.println(inputs[0] + " " + inputs[1] + " " + inputs[2]);
-			System.out.println("{");
-			System.out.println("\tget { return _" + inputs[2] + "; }");
-			System.out.println("\tset { _" + inputs[2] + " = value; }");
-			System.out.println("}");
-			System.out.println();
+			System.out.print(".");
 		}
-		System.out.println("#endregion");
+		for (; i < width; i++)
+		{
+			System.out.print(" ");
+		}
+		System.out.print("] " + Math.ceil(progressPercentage*100) + "%  ");
 	}
 
 	/**
