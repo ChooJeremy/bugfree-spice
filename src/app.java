@@ -85,6 +85,7 @@ public class app extends JFrame implements ActionListener
 		//Player starts first
 		playerStartFirst = true;
 		allocateNextTurn();
+		//new AppTimer(this, AppTimer.listenForInput, 500);
 		listenForInput();
 	}
 
@@ -245,12 +246,6 @@ public class app extends JFrame implements ActionListener
 	public void performOpponentsTurn()
 	{
 		performOpponentsTurn(((GridLayout) playerBoard.getLayout()).getColumns() == 7);
-	}
-
-	public void print()
-	{
-		System.out.println("Print: ");
-		System.out.println("Playerboard components: " + Jeremy.arrayToString(playerBoard.getComponents()).replace(", ", "\n"));
 	}
 
 	public void performOpponentsTurn(boolean isStartOfGame)
@@ -423,6 +418,8 @@ public class app extends JFrame implements ActionListener
 					{
 						new AppTimer(this, AppTimer.allocateNextTurn, 1000);
 					}
+					repaint();
+					revalidate();
 				}
 			}
 
@@ -539,6 +536,8 @@ public class app extends JFrame implements ActionListener
 		Scanner scanner = new Scanner(System.in);
 		String userInput;
 		boolean exit = false;
+		boolean isDisposed = false;
+		//Randomboard, (un)instant, uninstant, repaint/revalidate, dispose, new, reboot, exit
 		System.out.println("Ready.");
 		do
 		{
@@ -546,6 +545,11 @@ public class app extends JFrame implements ActionListener
 			switch(userInput)
 			{
 				case "randomboard":
+					if(isDisposed)
+					{
+						System.out.println("lol");
+						break;
+					}
 					s8w.restart();
 					s8w.getBoard().createRandomBoard();
 					fillBoard();
@@ -582,10 +586,61 @@ public class app extends JFrame implements ActionListener
 				case "uninstant":
 					AppTimer.instant = false;
 					System.out.println("Unset");
+					break;
+				case "repaint":
+				case "revalidate":
+					if(isDisposed)
+					{
+						System.out.println("lol");
+						break;
+					}
+					container.revalidate();
+					container.repaint();
+					System.out.println("Re-paint request sent.");
+					break;
+				case "dispose":
+					if(isDisposed)
+					{
+						System.out.println("lol");
+						break;
+					}
+					this.dispose();
+					isDisposed = true;
+					System.out.println("Done.");
+					break;
+				case "new":
+					if(!isDisposed)
+					{
+						System.out.print("The new input scanner will take over this. Continue? ");
+						if(!Jeremy.getBoolean())
+						{
+							System.out.println("Ready.");
+							break;
+						}
+					}
+					new app();
+					if(!isDisposed)
+					{
+						System.out.println("Old input scanner back. Ready.");
+					}
+					else
+					{
+						exit = true;
+					}
+					break;
+				// ------------------------------ Fixed due to reliance on lack of break; statements. --------------------
+				case "reboot":
+					this.dispose();
+					isDisposed = true;
+					new app();
 				case "exit":
 					exit = true;
-					this.dispose();
+					if(!isDisposed)
+					{
+						this.dispose();
+					}
 					break;
+				// ------------------------------ Fixed due to reliance on lack of break; statements. --------------------
 				default:
 					System.out.println("Unrecognized input. Please try again.");
 					break;

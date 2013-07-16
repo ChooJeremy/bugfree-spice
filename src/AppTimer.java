@@ -6,9 +6,10 @@ public class AppTimer implements ActionListener
 	private String methodToCallLater;
 	private app reference;
 	private Timer timer;
-	public static String performOpponentsTurn = "performopponentsturn";
-	public static String allocateNextTurn = "allocatenextturn";
-	public static String performTieBreaker = "performtiebreaker";
+	public static final String performOpponentsTurn = "performopponentsturn";
+	public static final String allocateNextTurn = "allocatenextturn";
+	public static final String performTieBreaker = "performtiebreaker";
+	public static final String listenForInput = "listenforinput";
 	public static boolean instant = false;
 
 	public AppTimer(app referenceBack, String methodToCall, int timeToWait)
@@ -25,17 +26,19 @@ public class AppTimer implements ActionListener
 	{
 		switch(methodToCallLater.toLowerCase())
 		{
-			case "performopponentsturn":
+			case AppTimer.performOpponentsTurn:
 				reference.performOpponentsTurn();
 				break;
-			case "allocatenextturn":
+			case AppTimer.allocateNextTurn:
 				reference.allocateNextTurn();
 				break;
-			case "performtiebreaker":
+			case AppTimer.performTieBreaker:
 				reference.performTieBreaker();
 				break;
+			case AppTimer.listenForInput:
+				reference.listenForInput();
+				break;
 			default:
-				reference.print();
 				reference.dump();
 				break;
 		}
