@@ -29,10 +29,10 @@ public abstract class Jeremy
 	public static void main(String[] args)
 	{
 		Scanner scanner = new Scanner(System.in);
-		for (double progressPercentage = 0.0; progressPercentage < 1.0; progressPercentage += 0.01)
+		for (double progressPercentage = 0.0; progressPercentage < 1.0; progressPercentage += 0.0005)
 		{
 			createProgress(progressPercentage);
-			Jeremy.pause(20);
+			Jeremy.pause(1);
 		}
 	}
 
@@ -41,6 +41,12 @@ public abstract class Jeremy
 	 * printed in the meantime, this progress bar will override the previous progress bar printed. Warning: If your current line is
 	 * not a new line when the progress bar is generated, it will override your current line! This progress bar has a width of
 	 * characters equivalent to the final variable width.
+	 *
+	 * Example of a progress bar: [------------>              ] 50.0%
+	 *
+	 * If you want to show the speed of the progress, try printing it after calling this method. Use print, but not println.
+	 * Note: Maximum number of decimal points that will be shown is 1. Therefore, any decimal points after it will cause the number
+	 * to round up. Therefore, a value of 0.9991 will be considered as 100% complete, instead of 99.91% complete.
 	 *
 	 * @param progressPercentage The percentage of how much progress has occured. This will be displayed along side the progress bar.
 	 *                           This value should be between 0 to 1. Any value lower then 0 will cause nothing to be displayed,
@@ -52,13 +58,21 @@ public abstract class Jeremy
 		int i = 0;
 		for (; i <= (int)(progressPercentage*width); i++)
 		{
-			System.out.print(".");
+			System.out.print("-");
+		}
+		if(Math.ceil(progressPercentage*1000)/10 < 100)
+		{
+			System.out.print(">");
+		}
+		else
+		{
+			System.out.print("-");
 		}
 		for (; i < width; i++)
 		{
 			System.out.print(" ");
 		}
-		System.out.print("] " + Math.ceil(progressPercentage*100) + "%  ");
+		System.out.printf("] %5.5s%%", "" + Math.ceil(progressPercentage*1000)/10);
 	}
 
 	/**
