@@ -229,7 +229,14 @@ public class app extends JFrame implements ActionListener
 				}
 				else
 				{
-					//Player has selected a board to use a game card on.
+					//Set the required values
+					s8w.setCardNo(selectedCardLocation);
+
+					//Run the card
+
+					//Update final stuff
+					deselectEverything();
+					allocateNextTurn();
 				}
 			}
 		}
