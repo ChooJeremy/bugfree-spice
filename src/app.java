@@ -1,3 +1,5 @@
+import GameCard.*;
+
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -13,6 +15,7 @@ public class app extends JFrame implements ActionListener
 	private boolean isEnemyTurn;
 	private Border originalBorder;
 	private boolean playerStartFirst;
+	private JLayeredPane mainPane;
 
 	public app()
 	{
@@ -22,15 +25,24 @@ public class app extends JFrame implements ActionListener
 		setVisible(true);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-		//We wrap all our stuff in a JComponent with an empty border of 20px. This makes it such that the app has a margin.
-		JComponent jc = (JComponent) this.getContentPane();
-		jc.setLayout(new GridLayout(1, 1));
-		jc.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		//Provide a margin of 20 by 20 pixels.
+		((JComponent) this.getContentPane()).setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+		//Create a layered panel to hold the layout so that we can use absolute values to show certain cards.
+		mainPane = new JLayeredPane();
+		mainPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		this.getContentPane().add(mainPane);
 
 		//Create the main container that will hold all our stuff
 		container = new JPanel();
-		jc.add(container);
 		container.setLayout(new GridLayout(3, 1, 0, 5));
+		container.setLocation(0, 0);
+		//Size will be set in the component listener.
+		mainPane.add(container, JLayeredPane.DEFAULT_LAYER);
+
+		//However, we want the container to be able to set it's size based on the window's size, and resize accordingly.
+		//Thus, add a component listener that implements component resized and do stuff accordingly.
+		this.addComponentListener(new FitContainer(this, container));
 
 		//Top part: The status
 		gameStatus = new JLabel("Status stuff goes here", SwingConstants.CENTER);
@@ -38,7 +50,7 @@ public class app extends JFrame implements ActionListener
 		gameStatus.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5, true));
 		gameStatus.setToolTipText("Status message");
 
-		//Middle part: The game board. We create a border so that it is sqare, and populate it with 9 buttons
+		//Middle part: The game board. We create a border so that it is square, and populate it with 9 buttons
 		gameBoard = new JPanel();
 		((JComponent) gameBoard).setBorder(BorderFactory.createEmptyBorder(0, 188, 0, 188));
 		gameBoard.setLayout(new GridLayout(3, 3, 1, 1));
@@ -85,7 +97,6 @@ public class app extends JFrame implements ActionListener
 		//Player starts first
 		playerStartFirst = true;
 		allocateNextTurn();
-		//new AppTimer(this, AppTimer.listenForInput, 500);
 		listenForInput();
 	}
 
@@ -172,26 +183,33 @@ public class app extends JFrame implements ActionListener
 			//Player has not selected a card
 			if(s8w.getCardNo() == null)
 			{
-				//If setting neutrals
-				int playerMoves = 0, opponentMoves = 0;
-				for(Component c : gameBoard.getComponents())
+				if(startOfGame)
 				{
-					if(c.getBackground() == Color.RED)
+					//If setting neutrals
+					int playerMoves = 0, opponentMoves = 0;
+					for(Component c : gameBoard.getComponents())
 					{
-						opponentMoves++;
+						if(c.getBackground() == Color.RED)
+						{
+							opponentMoves++;
+						}
+						else if(c.getBackground() == Color.GREEN)
+						{
+							playerMoves++;
+						}
 					}
-					else if(c.getBackground() == Color.GREEN)
+					if(playerMoves == 4 && opponentMoves == 4)
 					{
-						playerMoves++;
+						gameStatus.setText("Please select a card to compare!");
 					}
-				}
-				if(playerMoves == 4 && opponentMoves == 4)
-				{
-					gameStatus.setText("Please select a card to compare!");
+					else
+					{
+						gameStatus.setText("Please select a card to use first!");
+					}
 				}
 				else
 				{
-					gameStatus.setText("Please select a card to use first!");
+					gameStatus.setText("Please select a card to play first!");
 				}
 			}
 			else
@@ -408,9 +426,7 @@ public class app extends JFrame implements ActionListener
 					JButton jb;
 					for(int i = 0; i < 5; i++)
 					{
-						jb = new JButton("<html>Card " + (i+1) + "<br />Description Description Description Description Description Description</html>");
-						jb.setFont(new Font("Calibri", Font.PLAIN, 18));
-						jb.setBackground(Color.WHITE);
+						jb = new CardShower(new FillerCard());
 						jb.setActionCommand("" + i);
 						jb.addActionListener(this);
 						playerBoard.add(jb);
@@ -617,14 +633,21 @@ public class app extends JFrame implements ActionListener
 					System.out.println("Unset");
 					break;
 				case "repaint":
+					if(isDisposed)
+					{
+						System.out.println("lol");
+						break;
+					}
+					this.getContentPane().repaint();
+					System.out.println(userInput + " request sent.");
+					break;
 				case "revalidate":
 					if(isDisposed)
 					{
 						System.out.println("lol");
 						break;
 					}
-					container.revalidate();
-					container.repaint();
+					this.getContentPane().revalidate();
 					System.out.println(userInput + " request sent.");
 					break;
 				case "dispose":
@@ -635,27 +658,35 @@ public class app extends JFrame implements ActionListener
 					}
 					this.dispose();
 					isDisposed = true;
-					System.out.println("Done.");
+						System.out.println("Done.");
+						break;
+						case "new":
+							if(!isDisposed)
+							{
+								System.out.print("The new input scanner will take over this. Continue? ");
+								if(!Jeremy.getBoolean())
+								{
+									System.out.println("Ready.");
+									break;
+								}
+							}
+							new app();
+							if(!isDisposed)
+							{
+								System.out.println("Old input scanner back. Ready.");
+							}
+							else
+							{
+								exit = true;
+					}
 					break;
-				case "new":
-					if(!isDisposed)
-					{
-						System.out.print("The new input scanner will take over this. Continue? ");
-						if(!Jeremy.getBoolean())
-						{
-							System.out.println("Ready.");
-							break;
-						}
-					}
-					new app();
-					if(!isDisposed)
-					{
-						System.out.println("Old input scanner back. Ready.");
-					}
-					else
-					{
-						exit = true;
-					}
+				case "test":
+					JPanel jp = new JPanel();
+					jp.setBackground(Color.RED);
+					jp.setOpaque(true);
+					jp.setBounds(100, 100, 100, 100);
+					mainPane.add(jp, JLayeredPane.POPUP_LAYER);
+					System.out.println("Done.");
 					break;
 				// ------------------------------ Fixed due to reliance on lack of break; statements. --------------------
 				case "restart":

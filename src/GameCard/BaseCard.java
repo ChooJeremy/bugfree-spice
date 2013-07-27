@@ -29,6 +29,10 @@ public abstract class BaseCard
 		type = t;
 	}
 
+	public String getName() { return name;}
+	public String getDescription() {return description;}
+	public int getType() {return type;}
+
 	public static String getAttackType(int type)
 	{
 		switch(type)

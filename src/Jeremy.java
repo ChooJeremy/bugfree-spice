@@ -56,6 +56,7 @@ public abstract class Jeremy
 	{
 		System.out.print("\r[");
 		int i = 0;
+		Random random = new Random();
 		for (; i <= (int)(progressPercentage*width); i++)
 		{
 			System.out.print("-");
