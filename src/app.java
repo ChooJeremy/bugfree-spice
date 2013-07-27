@@ -1,3 +1,4 @@
+import EventListeners.*;
 import GameCard.*;
 
 import java.util.*;
@@ -8,6 +9,7 @@ import javax.swing.border.Border;
 
 public class app extends JFrame implements ActionListener
 {
+	private JLayeredPane mainPane;
 	private Container container;
 	private JLabel gameStatus;
 	private Container gameBoard, playerBoard;
@@ -15,7 +17,6 @@ public class app extends JFrame implements ActionListener
 	private boolean isEnemyTurn;
 	private Border originalBorder;
 	private boolean playerStartFirst;
-	private JLayeredPane mainPane;
 
 	public app()
 	{
@@ -42,7 +43,7 @@ public class app extends JFrame implements ActionListener
 
 		//However, we want the container to be able to set it's size based on the window's size, and resize accordingly.
 		//Thus, add a component listener that implements component resized and do stuff accordingly.
-		this.addComponentListener(new FitContainer(this, container));
+		this.addComponentListener(new FitContainer(this, container, -57, -78));
 
 		//Top part: The status
 		gameStatus = new JLabel("Status stuff goes here", SwingConstants.CENTER);
@@ -426,7 +427,7 @@ public class app extends JFrame implements ActionListener
 					JButton jb;
 					for(int i = 0; i < 5; i++)
 					{
-						jb = new CardShower(new FillerCard());
+						jb = new CardShower(mainPane, new FillerCard());
 						jb.setActionCommand("" + i);
 						jb.addActionListener(this);
 						playerBoard.add(jb);
@@ -687,6 +688,7 @@ public class app extends JFrame implements ActionListener
 					jp.setBounds(100, 100, 100, 100);
 					mainPane.add(jp, JLayeredPane.POPUP_LAYER);
 					System.out.println("Done.");
+					System.out.println(MouseInfo.getPointerInfo().getLocation());
 					break;
 				// ------------------------------ Fixed due to reliance on lack of break; statements. --------------------
 				case "restart":

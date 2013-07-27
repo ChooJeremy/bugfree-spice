@@ -1,27 +1,31 @@
+package EventListeners;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.Timer;
 import java.util.*;
 
 public class FitContainer implements ComponentListener
 {
-	public static int dx = -57;
-	public static int dy = -78;
-
 	private Container container;
-	private JFrame source;
+	private Container source;
+	private int dx;
+	private int dy;
 
-	public FitContainer(JFrame referenceToCheck, Container itemToChange)
+	public FitContainer(Container referenceToCheck, Container itemToChange, int changeInX, int changeInY)
 	{
 		source = referenceToCheck;
 		container = itemToChange;
+		dx = changeInX;
+		dy = changeInY;
+		System.out.println(dx + " " + dy);
 	}
 
 	@Override
 	public void componentResized(ComponentEvent e)
 	{
 		container.setSize(source.getWidth() + dx, source.getHeight() + dy);
+		container.setPreferredSize(new Dimension(source.getWidth() + dx, source.getHeight() + dy));
 		container.revalidate();
 	}
 
