@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
-public class CardShower extends JButton implements ActionListener, MouseListener
+public class CardShower extends JButton implements MouseListener
 {
 	public static final int LARGE_HEIGHT = 200;
 	public static final int LARGE_WIDTH = 175;
@@ -20,7 +20,6 @@ public class CardShower extends JButton implements ActionListener, MouseListener
 		container = gameScreen;
 		this.setBackground(Color.WHITE);
 		this.addMouseListener(this);
-		this.addActionListener(this);
 		this.setLayout(new FlowLayout(FlowLayout.CENTER));
 
 		//Add the required stuff
@@ -40,9 +39,18 @@ public class CardShower extends JButton implements ActionListener, MouseListener
 		this.addComponentListener(new FitContainer(this, picture, -17, -120));
 		this.add(picture);
 
-		JLabel description = new JLabel("<html><pre>" + card.getDescription() + "</pre></html>");
+		JTextArea description = new JTextArea(card.getShortDescription());
 		description.setFont(new Font("Calibri", Font.PLAIN, 11));
-		description.setSize(200, 200);
+		description.setWrapStyleWord(true);
+		description.setLineWrap(true);
+		description.setPreferredSize(new Dimension(130, 50));
+		//Make the text's horizontal change dynamically. Vertically... can't be helped.
+		this.addComponentListener(new FitContainer(this, description, -17, -120));
+		description.setEditable(false);
+		//Mouse events from a jtextarea do not propagate down, add this as well.
+		description.addMouseListener(this);
+		//So do click events. Add a action command, check if it's this, if so, get it to propagates.
+
 		this.add(description);
 
 		//The big card that appears on hover over
@@ -54,33 +62,40 @@ public class CardShower extends JButton implements ActionListener, MouseListener
 				TitledBorder.TOP
 		));
 		largeCard.setBackground(Color.WHITE);
-		largeCard.add(new JPanel());
-		largeCard.getComponent(0).setBackground(Color.CYAN);
-	}
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		System.out.println("You're playing a game card!");
+		//Add the picture
+		JLabel largePicture = new JLabel();
+		largePicture.setText("Picture");
+		largePicture.setBackground(Color.CYAN);
+		largePicture.setOpaque(true);
+		largePicture.setPreferredSize(new Dimension(150, 50));
+		largeCard.add(largePicture);
+
+		//Description
+		JTextArea longDescription = new JTextArea();
+		longDescription.setText(card.getLongDescription());
+		longDescription.setWrapStyleWord(true);
+		longDescription.setLineWrap(true);
+		longDescription.setEditable(false);
+		longDescription.setPreferredSize(new Dimension(150, 110));
+		largeCard.add(longDescription);
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
-		System.out.println("MouseClick!");
+		//Propagate events from the text area down so that clicks on the text area are received as well.
+		if(e.getSource() instanceof JTextArea)
+		{
+			this.getActionListeners()[0].actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, this.getActionCommand()));
+		}
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e)
-	{
-		System.out.println("MousePress!");
-	}
+	public void mousePressed(MouseEvent e) { }
 
 	@Override
-	public void mouseReleased(MouseEvent e)
-	{
-		System.out.println("MouseRelease!");
-	}
+	public void mouseReleased(MouseEvent e) { }
 
 	@Override
 	public void mouseEntered(MouseEvent e)

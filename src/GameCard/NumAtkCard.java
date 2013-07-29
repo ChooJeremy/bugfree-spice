@@ -13,7 +13,7 @@ public class NumAtkCard extends AttackCard
 
 	public NumAtkCard(int number)
 	{
-		super(number + " destructor", "Targets all cards on the battlefield with the number " + number + ". Deal 3 damage to all of them.");
+		super(number + " destructor", "All cards with " + number + " takes 3 damage", "Targets all cards on the battlefield with the number " + number + ". Deal 3 damage to all of them.");
 		selectedNumber = number;
 	}
 }

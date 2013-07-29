@@ -9,8 +9,8 @@ public class AttackCard extends BaseCard
 		super();
 	}
 
-	public AttackCard(String n, String d)
+	public AttackCard(String n, String sd, String d)
 	{
-		super(n, d, ENEMY);
+		super(n, sd, d, ENEMY);
 	}
 }

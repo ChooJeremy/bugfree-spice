@@ -18,7 +18,6 @@ public class FitContainer implements ComponentListener
 		container = itemToChange;
 		dx = changeInX;
 		dy = changeInY;
-		System.out.println(dx + " " + dy);
 	}
 
 	@Override

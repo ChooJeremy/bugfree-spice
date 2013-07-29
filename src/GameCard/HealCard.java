@@ -9,8 +9,8 @@ public class HealCard extends BaseCard
 		super();
 	}
 
-	public HealCard(String n, String d)
+	public HealCard(String n, String sd, String d)
 	{
-		super(n, d, ALLY);
+		super(n, sd, d, ALLY);
 	}
 }

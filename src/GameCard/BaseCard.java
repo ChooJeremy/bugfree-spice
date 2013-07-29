@@ -10,6 +10,7 @@ public abstract class BaseCard
 
 	private String name;
 	private String description;
+	private String shortDescription;
 	private int type;
 	private int change;
 
@@ -18,19 +19,21 @@ public abstract class BaseCard
 
 	}
 
-	public BaseCard(String n, String d, int t)
+	public BaseCard(String n, String sd, String d, int t)
 	{
 		if(t != ALLY && t != ENEMY && t != BOTH)
 		{
 			throw new IllegalArgumentException("Type: " + type);
 		}
 		name = n;
+		shortDescription = sd;
 		description = d;
 		type = t;
 	}
 
 	public String getName() { return name;}
-	public String getDescription() {return description;}
+	public String getLongDescription() {return description;}
+	public String getShortDescription() {return shortDescription;}
 	public int getType() {return type;}
 
 	public static String getAttackType(int type)
@@ -51,12 +54,6 @@ public abstract class BaseCard
 	@Override
 	public String toString()
 	{
-		return
-				"---------------------------" +
-				"| " + name + " |" +
-				"|                    " + getAttackType(type) + " |" +
-				"|                          |" +
-				"| " + description + " |" +
-				"---------------------------";
+		return name + "(" + getAttackType(type) + ") :\n" + description;
 	}
 }

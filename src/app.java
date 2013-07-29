@@ -17,6 +17,7 @@ public class app extends JFrame implements ActionListener
 	private boolean isEnemyTurn;
 	private Border originalBorder;
 	private boolean playerStartFirst;
+	private boolean isStartOfGame;
 
 	public app()
 	{
@@ -97,6 +98,7 @@ public class app extends JFrame implements ActionListener
 
 		//Player starts first
 		playerStartFirst = true;
+		isStartOfGame = true;
 		allocateNextTurn();
 		listenForInput();
 	}
@@ -146,11 +148,10 @@ public class app extends JFrame implements ActionListener
 		*/
 		JButton source = (JButton) e.getSource();
 		int selectedCardLocation = Integer.parseInt(e.getActionCommand());
-		boolean startOfGame = ((GridLayout) playerBoard.getLayout()).getColumns() == 7;
 
 		if(source.getBackground() == Color.WHITE) //Player cards clicked
 		{
-			if(startOfGame)
+			if(isStartOfGame)
 			{
 				//It is the start of the game, where players are setting the numbers on the board
 
@@ -174,9 +175,7 @@ public class app extends JFrame implements ActionListener
 			else
 			{
 				//Game cards are being played
-				System.out.println("Game cards are being played!");
-				JButton btn = new JButton("This is a new button!");
-				container.add(btn);
+				System.out.println("Game card played: " + selectedCardLocation);
 			}
 		}
 		else
@@ -184,7 +183,7 @@ public class app extends JFrame implements ActionListener
 			//Player has not selected a card
 			if(s8w.getCardNo() == null)
 			{
-				if(startOfGame)
+				if(isStartOfGame)
 				{
 					//If setting neutrals
 					int playerMoves = 0, opponentMoves = 0;
@@ -215,7 +214,7 @@ public class app extends JFrame implements ActionListener
 			}
 			else
 			{
-				if(startOfGame)
+				if(isStartOfGame)
 				{
 					//Ensure the player is not setting the middle
 					if(selectedCardLocation == 4)
@@ -265,11 +264,6 @@ public class app extends JFrame implements ActionListener
 	}
 
 	public void performOpponentsTurn()
-	{
-		performOpponentsTurn(((GridLayout) playerBoard.getLayout()).getColumns() == 7);
-	}
-
-	public void performOpponentsTurn(boolean isStartOfGame)
 	{
 		if(isStartOfGame)
 		{
@@ -346,8 +340,7 @@ public class app extends JFrame implements ActionListener
 
 	public void allocateNextTurn()
 	{
-		boolean startOfGame = ((GridLayout) playerBoard.getLayout()).getColumns() == 7;
-		if(startOfGame)
+		if(isStartOfGame)
 		{
 			//Find out how many moves the player has made, and how many moves the opponent has made
 			int playerMoves = 0, opponentMoves = 0;
@@ -416,6 +409,7 @@ public class app extends JFrame implements ActionListener
 							return;
 						}
 					}
+					isStartOfGame = false;
 					//Remove the cards from the player's hands
 					s8w.getPlayer().removeCard(new Card(playerCard, Card.DIAMOND));
 					s8w.getOpponent().removeCard(new Card(opponentCard, Card.DIAMOND));
@@ -427,7 +421,7 @@ public class app extends JFrame implements ActionListener
 					JButton jb;
 					for(int i = 0; i < 5; i++)
 					{
-						jb = new CardShower(mainPane, new FillerCard());
+						jb = new CardShower(mainPane, new NumAtkCard(i+(int) (Math.random() * 6) + 1));
 						jb.setActionCommand("" + i);
 						jb.addActionListener(this);
 						playerBoard.add(jb);
