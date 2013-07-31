@@ -1,5 +1,6 @@
 import EventListeners.*;
 import GameCard.*;
+import Side8Items.Side8Board;
 
 import java.util.*;
 import java.awt.*;
@@ -91,9 +92,10 @@ public class app extends JFrame implements ActionListener
 		fillBoard();
 
 		//Fill the player's hands
-		for(int i = 0; i < s8w.getPlayer().handSize(); i++)
+		for(int i = 0; i < s8w.getPlayer().size(); i++)
 		{
-			((JButton) playerBoard.getComponent(i)).setText("" + s8w.getPlayer().getHand().get(i).getNumber());
+			int theNum = ((StartCard) s8w.getPlayer().get(i)).getThisNum();
+			((JButton) playerBoard.getComponent(i)).setText("" + theNum);
 		}
 
 		//Player starts first
@@ -105,30 +107,25 @@ public class app extends JFrame implements ActionListener
 
 	public void fillBoard()
 	{
-		int[][] board = s8w.getBoard().getBoard();
-		for(int i = 0; i < board.length; i++)
+		Side8Board board = s8w.getBoard();
+		for(int i = 0; i < 9; i++)
 		{
-			for(int j = 0; j < board[i].length; j++)
+			JButton jb = (JButton) gameBoard.getComponent(i);
+			jb.setText("" + board.getBoardNumber(i));
+			switch(board.getStatus(i))
 			{
-				JButton jb = (JButton) gameBoard.getComponent(i*3+j);
-				if(board[i][j] < 0)
-				{
-					jb.setText("" + (board[i][j] * -1));
+				case Side8Board.ENEMY:
 					jb.setBackground(Color.RED);
-				}
-				else if(board[i][j] > 0)
-				{
-					jb.setText("" + board[i][j]);
+					break;
+				case Side8Board.ALLY:
 					jb.setBackground(Color.GREEN);
-				}
-				if((i==1&&j==1)||board[i][j] == 0)
-				{
-					jb.setText("" + board[i][j]);
+					break;
+				case Side8Board.NEUTRAL:
+				case 0:
 					jb.setBackground(Color.LIGHT_GRAY);
-				}
+					break;
 			}
 		}
-		gameStatus.setText("<html><pre>" + s8w.getBoard().getBoardView() + "</pre></html>");
 	}
 
 	@Override
@@ -156,10 +153,11 @@ public class app extends JFrame implements ActionListener
 				//It is the start of the game, where players are setting the numbers on the board
 
 				//Set the card and show the user that is has been selected
+				deselectEverything();
+
 				s8w.setCardNo(selectedCardLocation);
 				((JButton) e.getSource()).setBorder(BorderFactory.createLoweredBevelBorder());
-				deselectEverything();
-				if(s8w.getPlayer().getHand().size() > 3)
+				if(s8w.getPlayer().size() > 3)
 				{
 					//The player is selecting something to send to the board
 					gameStatus.setText("Card selected: " + source.getText());
@@ -236,9 +234,10 @@ public class app extends JFrame implements ActionListener
 					((JButton) gameBoard.getComponent(selectedCardLocation)).setText("" + playerCardNo);
 					gameBoard.getComponent(selectedCardLocation).setBackground(Color.GREEN);
 					s8w.getBoard().setBoardNumber(selectedCardLocation, playerCardNo);
+					s8w.getBoard().setStatus(selectedCardLocation, Side8Board.ALLY);
 
 					//Remove the card
-					s8w.getPlayer().removeCard(new Card(playerCardNo, Card.DIAMOND));
+					s8w.getPlayer().remove(new StartCard(playerCardNo));
 					playerBoard.remove(playerCardLocation);
 					playerBoard.add(new JPanel(), playerCardLocation);
 
@@ -267,7 +266,7 @@ public class app extends JFrame implements ActionListener
 	{
 		if(isStartOfGame)
 		{
-			int cardToUse = s8w.getOpponent().getHand().get(0).getNumber();
+			int cardToUse = ((StartCard) s8w.getOpponent().get(0)).getThisNum();
 
 			//Find out how many moves the player has made, and how many moves the opponent has made
 			int playerMoves = 0, opponentMoves = 0;
@@ -289,14 +288,16 @@ public class app extends JFrame implements ActionListener
 				int playerCardNo = Integer.parseInt(((JButton) playerBoard.getComponent(s8w.getCardNo())).getText());
 				int neutrals = Math.abs(playerCardNo - cardToUse);
 				s8w.getBoard().setBoardNumber(4, s8w.getBoard().getBoardNumber(4) + neutrals);
+				s8w.getBoard().setStatus(4, Side8Board.NEUTRAL);
 				((JButton) gameBoard.getComponent(4)).setText("" + s8w.getBoard().getBoardNumber(4));
 
 				//Remove the cards
-				s8w.getPlayer().removeCard(new Card(playerCardNo, Card.DIAMOND));
+				s8w.getPlayer().remove(new StartCard(playerCardNo));
 				playerBoard.remove(s8w.getCardNo());
 				playerBoard.add(new JPanel(), (int) s8w.getCardNo());
-				s8w.getOpponent().removeCard(new Card(cardToUse, Card.DIAMOND));
+				s8w.getOpponent().remove(0);
 				s8w.finishSelection();
+				deselectEverything();
 
 				gameStatus.setText("<html><pre>Opponent chose card " + cardToUse + ", your card was " + playerCardNo + "\nNeutrals added: " + neutrals + "</pre></html>");
 			}
@@ -318,10 +319,11 @@ public class app extends JFrame implements ActionListener
 								//Set to location
 								((JButton) gameBoard.getComponent(i)).setText("" + cardToUse);
 								gameBoard.getComponent(i).setBackground(Color.RED);
-								s8w.getBoard().setBoardNumber(i, cardToUse * -1);
+								s8w.getBoard().setBoardNumber(i, cardToUse);
+								s8w.getBoard().setStatus(i, Side8Board.ENEMY);
 
 								//Remove the card
-								s8w.getOpponent().removeCard(new Card(cardToUse, Card.DIAMOND));
+								s8w.getOpponent().remove(0);
 								break;
 							}
 						}
@@ -358,14 +360,14 @@ public class app extends JFrame implements ActionListener
 
 			if(playerMoves == 4 && opponentMoves == 4)
 			{
-				if(s8w.getPlayer().getHand().size() > 1)
+				if(s8w.getPlayer().size() > 1)
 				{
 					//Time to set the neutrals!
 					if(s8w.getCardNo() == null)
 					{
 						isEnemyTurn = false;
 						//Don't immediately change, append
-						if(s8w.getPlayer().getHand().size() == 2)
+						if(s8w.getPlayer().size() == 2)
 						{
 							gameStatus.setText(gameStatus.getText().substring(0, gameStatus.getText().length() - 13) +
 									"\nSelect a card to compare with the opponent's card.</pre></html>");
@@ -384,8 +386,8 @@ public class app extends JFrame implements ActionListener
 				}
 				else
 				{
-					int playerCard = s8w.getPlayer().getHand().get(0).getNumber();
-					int opponentCard = s8w.getOpponent().getHand().get(0).getNumber();
+					int playerCard = ((StartCard) s8w.getPlayer().get(0)).getThisNum();
+					int opponentCard = ((StartCard) s8w.getOpponent().get(0)).getThisNum();
 					if(playerCard > opponentCard)
 					{
 						gameStatus.setText(gameStatus.getText().substring(0, gameStatus.getText().length() - 13) +
@@ -411,21 +413,31 @@ public class app extends JFrame implements ActionListener
 					}
 					isStartOfGame = false;
 					//Remove the cards from the player's hands
-					s8w.getPlayer().removeCard(new Card(playerCard, Card.DIAMOND));
-					s8w.getOpponent().removeCard(new Card(opponentCard, Card.DIAMOND));
+					s8w.getPlayer().remove(0);
+					s8w.getOpponent().remove(0);
 					//Create the game cards and give them to the players
 
 					//Perform the required layout changes (Changing the player's board to 5, etc, dealing the cards)
 					playerBoard.removeAll();
 					playerBoard.setLayout(new GridLayout(1, 5, 1, 0));
+
+					//Deal out the cards to each player
+					for(int i = 0; i < 5; i++)
+					{
+						s8w.getPlayer().add(new NumAtkCard(i + (int) (Math.random() * 6) + 1));
+						s8w.getOpponent().add(new NumAtkCard(i + (int) (Math.random() * 6) + 1));
+					}
+
+					//Display this information on the board.
 					JButton jb;
 					for(int i = 0; i < 5; i++)
 					{
-						jb = new CardShower(mainPane, new NumAtkCard(i+(int) (Math.random() * 6) + 1));
+						jb = new CardShower(mainPane, s8w.getPlayer().get(i));
 						jb.setActionCommand("" + i);
 						jb.addActionListener(this);
 						playerBoard.add(jb);
 					}
+
 					//Run opponent's move if it's the opponent's turn, otherwise wait for user input.
 					if(isEnemyTurn)
 					{
@@ -540,7 +552,11 @@ public class app extends JFrame implements ActionListener
 		}
 		else
 		{
-			//Give the next turn to the appropriate player.
+			//Gameplay, allocate the turn correctly.
+			if(isEnemyTurn)
+			{
+				new AppTimer(this, AppTimer.performOpponentsTurn, 1000);
+			}
 		}
 	}
 
@@ -572,7 +588,7 @@ public class app extends JFrame implements ActionListener
 					playerBoard.setLayout(new GridLayout(1, 7, 1, 0));
 					for(int i = 0; i < 7; i++)
 					{
-						jb = new JButton("" + s8w.getPlayer().getHand().get(i).getNumber());
+						jb = new JButton("" + ((StartCard) s8w.getPlayer().get(i)).getThisNum());
 						jb.setFont(new Font("Calibri", Font.PLAIN, 18));
 						jb.setBackground(Color.WHITE);
 						jb.setActionCommand("" + i);
@@ -593,13 +609,13 @@ public class app extends JFrame implements ActionListener
 					s8w.restart();
 					s8w.getBoard().createRandomBoard();
 					fillBoard();
-					while(s8w.getPlayer().handSize() > 1)
+					while(s8w.getPlayer().size() > 1)
 					{
-						s8w.getPlayer().removeCard(s8w.getPlayer().getHand().get(0));
+						s8w.getPlayer().remove(0);
 					}
-					while(s8w.getOpponent().handSize() > 1)
+					while(s8w.getOpponent().size() > 1)
 					{
-						s8w.getOpponent().removeCard(s8w.getOpponent().getHand().get(0));
+						s8w.getOpponent().remove(0);
 					}
 
 					//Act as if it's the start of the game by ensuring that the playerboard has 7 components
@@ -609,7 +625,7 @@ public class app extends JFrame implements ActionListener
 					{
 						playerBoard.add(new JPanel());
 					}
-					jb = new JButton("" + s8w.getPlayer().getHand().get(0).getNumber());
+					jb = new JButton("" + ((StartCard) s8w.getPlayer().get(0)).getThisNum());
 					jb.setFont(new Font("Calibri", Font.PLAIN, 18));
 					jb.setBackground(Color.WHITE);
 					jb.setActionCommand("" + 7);
@@ -675,6 +691,9 @@ public class app extends JFrame implements ActionListener
 								exit = true;
 					}
 					break;
+				case "dump":
+					dump();
+					break;
 				case "test":
 					JPanel jp = new JPanel();
 					jp.setBackground(Color.RED);
@@ -700,7 +719,7 @@ public class app extends JFrame implements ActionListener
 				// ------------------------------ Fixed due to reliance on lack of break; statements. --------------------
 				default:
 					System.out.println("Unrecognized input. Please try again.");
-					System.out.println("Accepted input: newgame, Randomboard, (un)instant, repaint/revalidate, dispose, new, restart/reboot, exit");
+					System.out.println("Accepted input: newgame, Randomboard, (un)instant, repaint/revalidate, dispose, dump, new, restart/reboot, exit");
 					break;
 			}
 		} while (!exit);

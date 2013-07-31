@@ -2,7 +2,7 @@ package GameCard;
 
 import java.util.*;
 
-public class HealCard extends BaseCard
+public abstract class HealCard extends BaseCard
 {
 	public HealCard()
 	{

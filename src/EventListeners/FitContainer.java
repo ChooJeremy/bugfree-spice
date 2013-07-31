@@ -2,17 +2,16 @@ package EventListeners;
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
 import java.util.*;
 
 public class FitContainer implements ComponentListener
 {
 	private Container container;
 	private Container source;
-	private int dx;
-	private int dy;
+	private Integer dx;
+	private Integer dy;
 
-	public FitContainer(Container referenceToCheck, Container itemToChange, int changeInX, int changeInY)
+	public FitContainer(Container referenceToCheck, Container itemToChange, Integer changeInX, Integer changeInY)
 	{
 		source = referenceToCheck;
 		container = itemToChange;
@@ -23,8 +22,10 @@ public class FitContainer implements ComponentListener
 	@Override
 	public void componentResized(ComponentEvent e)
 	{
-		container.setSize(source.getWidth() + dx, source.getHeight() + dy);
-		container.setPreferredSize(new Dimension(source.getWidth() + dx, source.getHeight() + dy));
+		int expectedWidth = (dx == null ? container.getWidth() : source.getWidth() + dx);
+		int expectedHeight = (dy == null ? container.getHeight() : source.getHeight() + dy);
+		container.setSize(expectedWidth, expectedHeight);
+		container.setPreferredSize(new Dimension(expectedWidth, expectedHeight));
 		container.revalidate();
 	}
 

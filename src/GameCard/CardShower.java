@@ -44,8 +44,9 @@ public class CardShower extends JButton implements MouseListener
 		description.setWrapStyleWord(true);
 		description.setLineWrap(true);
 		description.setPreferredSize(new Dimension(130, 50));
-		//Make the text's horizontal change dynamically. Vertically... can't be helped.
-		this.addComponentListener(new FitContainer(this, description, -17, -120));
+		//Make the text's horizontal change dynamically.
+		description.setPreferredSize(new Dimension(130, 74));
+		this.addComponentListener(new FitContainer(this, description, -17, null));
 		description.setEditable(false);
 		//Mouse events from a jtextarea do not propagate down, add this as well.
 		description.addMouseListener(this);

@@ -1,56 +1,49 @@
-import java.util.ArrayList;
+import GameCard.*;
+import Side8Items.*;
+
+import java.util.*;
 
 public class Side8Wrapper
 {
-	private Participant player;
-	private Participant opponent;
+	private ArrayList<BaseCard> playerHand;
+	private ArrayList<BaseCard> opponentHand;
 	private Side8Board board;
 	//Attributes to store the cards
 	private ArrayList<Integer> cardsBeingUsed;
 
-	public Participant getPlayer() {return player; }
-	public Participant getOpponent() {return opponent; }
+	public ArrayList<BaseCard> getPlayer() {return playerHand; }
+	public ArrayList<BaseCard> getOpponent() {return opponentHand; }
 	public Side8Board getBoard() {return board; }
 
 	public Side8Wrapper()
 	{
 		board = new Side8Board();
-		player = new Participant("Player");
-		opponent = new Participant("Opponent");
+		playerHand = new ArrayList<>();
+		opponentHand = new ArrayList<>();
 		cardsBeingUsed = new ArrayList<>();
 		restart();
-	}
-
-	public Side8Wrapper(Participant p, Participant o, Side8Board b)
-	{
-		player = p;
-		opponent = o;
-		board = b;
-		cardsBeingUsed = new ArrayList<>();
 	}
 
 	public void restart()
 	{
 		//Reset all the variables
 		board = new Side8Board();
-		player = new Participant("Player");
-		opponent = new Participant("Opponent");
+		playerHand = new ArrayList<>();
+		opponentHand = new ArrayList<>();
 		cardsBeingUsed = new ArrayList<>();
 
-		Deck playerHand = initDeck(4);
-		playerHand.shuffle();
+		ArrayList<BaseCard> startingDeck = initDeck(4);
 		for(int i = 0; i < 7; i++)
 		{
-			player.getCard(playerHand.draw());
+			playerHand.add(startingDeck.get(i));
 		}
-		playerHand = initDeck(4);
-		playerHand.shuffle();
+		startingDeck = initDeck(4);
 		for(int i = 0; i < 7; i++)
 		{
-			opponent.getCard(playerHand.draw());
+			opponentHand.add(startingDeck.get(i));
 		}
-		player.sortHand();
-		opponent.sortHand();
+		Collections.sort(playerHand);
+		Collections.sort(opponentHand);
 	}
 
 	public void setCardNo(int number)
@@ -103,37 +96,37 @@ public class Side8Wrapper
 		cardsBeingUsed.clear();
 	}
 
-	public static Deck initDeck(int totalRepeats)
+	public static ArrayList<BaseCard> initDeck(int totalRepeats)
 	{
-		Deck deck = new Deck();
-		deck.clear();
+		ArrayList<BaseCard> result = new ArrayList<>();
 		for(int i = 0; i < totalRepeats; i++)
 		{
 			for(int j = 1; j <= 10; j++)
 			{
-				deck.addCard(new Card(j, Card.DIAMOND));
+				result.add(new StartCard(j));
 			}
 		}
-		return deck;
+		Jeremy.randomize(result);
+		return result;
 	}
 
 	public String getEverythingInString()
 	{
 		String result = "[";
-		for(int i = 0; i < opponent.getHand().size(); i++)
+		for(int i = 0; i < opponentHand.size(); i++)
 		{
-			result += opponent.getHand().get(i).getNumber();
-			if(i != opponent.getHand().size() - 1)
+			result += opponentHand.get(i).getShortDescription();
+			if(i != opponentHand.size() - 1)
 			{
 				result += "  ";
 			}
 		}
 		result += "]\n";
 		result += this.getBoard().getBoardView() + "\n[";
-		for(int i = 0; i < player.getHand().size(); i++)
+		for(int i = 0; i < playerHand.size(); i++)
 		{
-			result += player.getHand().get(i).getNumber();
-			if(i != player.getHand().size() - 1)
+			result += playerHand.get(i).getShortDescription();
+			if(i != playerHand.size() - 1)
 			{
 				result += "  ";
 			}

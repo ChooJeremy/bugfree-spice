@@ -2,7 +2,7 @@ package GameCard;
 
 import java.util.*;
 
-public class AttackCard extends BaseCard
+public abstract class AttackCard extends BaseCard
 {
 	public AttackCard()
 	{
