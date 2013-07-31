@@ -1,6 +1,6 @@
 import EventListeners.*;
 import GameCard.*;
-import Side8Items.Side8Board;
+import Side8Items.*;
 
 import java.util.*;
 import java.awt.*;
