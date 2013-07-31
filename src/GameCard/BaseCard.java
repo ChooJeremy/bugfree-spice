@@ -56,7 +56,7 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	 * Performs the action for this card. Pass in the current board and the target selected (0-8) and the method will perform
 	 * the rest, removing and increasing certain numbers on the board as necessary
 	 *
-	 * @param board the current game board
+	 * @param currentStatus the current game board and the player's hands.
 	 * @param targets the targets selected (0-8), horizontal first. Cards that only take in 1 target should have a limit of 1 in this
 	 *                arraylist.
 	 * @return the total damage or healing done to the board. If both healing and damage is dealt, the total is given.
@@ -65,7 +65,7 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	 *         is defeated, in turns to 3 in favour of the user, thereby causing a total difference of 1 + 2 + 3, or 6. The method
 	 *         will thus return 6.
 	 */
-	public abstract int performAction(Side8Board board, ArrayList<Integer> targets);
+	public abstract int performAction(Side8Wrapper currentStatus, ArrayList<Integer> targets);
 
 	@Override
 	public String toString()

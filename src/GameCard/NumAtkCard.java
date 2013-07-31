@@ -1,6 +1,6 @@
 package GameCard;
 
-import Side8Items.Side8Board;
+import Side8Items.*;
 
 import java.util.*;
 
@@ -20,8 +20,10 @@ public class NumAtkCard extends AttackCard
 	}
 
 	@Override
-	public int performAction(Side8Board board, ArrayList<Integer> targets)
+	public int performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
 	{
+		Side8Board board = s8w.getBoard();
+
 		int totalDamage = 0;
 		for(int i = 0; i < 9; i++)
 		{

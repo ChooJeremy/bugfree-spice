@@ -14,10 +14,14 @@ public class CardShower extends JButton implements MouseListener
 
 	private JLayeredPane container;
 	private JPanel largeCard;
+	private BaseCard cardBeingShown;
+
+	public BaseCard getCardBeingShown() {return cardBeingShown; }
 
 	public CardShower(JLayeredPane gameScreen, BaseCard card)
 	{
 		container = gameScreen;
+		cardBeingShown = card;
 		this.setBackground(Color.WHITE);
 		this.addMouseListener(this);
 		this.setLayout(new FlowLayout(FlowLayout.CENTER));

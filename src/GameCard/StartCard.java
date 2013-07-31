@@ -1,6 +1,7 @@
 package GameCard;
 
-import Side8Items.Side8Board;
+import Side8Items.*;
+
 import java.util.*;
 
 public class StartCard extends BaseCard
@@ -16,8 +17,9 @@ public class StartCard extends BaseCard
 	}
 
 	@Override
-	public int performAction(Side8Board board, ArrayList<Integer> targets)
+	public int performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
 	{
+		Side8Board board = s8w.getBoard();
 		if(targets.size() > 1)
 		{
 			throw new IllegalArgumentException(targets.toString());

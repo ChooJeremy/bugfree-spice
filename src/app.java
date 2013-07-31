@@ -92,9 +92,9 @@ public class app extends JFrame implements ActionListener
 		fillBoard();
 
 		//Fill the player's hands
-		for(int i = 0; i < s8w.getPlayer().size(); i++)
+		for(int i = 0; i < s8w.getPlayer().getHand().size(); i++)
 		{
-			int theNum = ((StartCard) s8w.getPlayer().get(i)).getThisNum();
+			int theNum = ((StartCard) s8w.getPlayer().getHand().get(i)).getThisNum();
 			((JButton) playerBoard.getComponent(i)).setText("" + theNum);
 		}
 
@@ -157,7 +157,7 @@ public class app extends JFrame implements ActionListener
 
 				s8w.setCardNo(selectedCardLocation);
 				((JButton) e.getSource()).setBorder(BorderFactory.createLoweredBevelBorder());
-				if(s8w.getPlayer().size() > 3)
+				if(s8w.getPlayer().getHand().size() > 3)
 				{
 					//The player is selecting something to send to the board
 					gameStatus.setText("Card selected: " + source.getText());
@@ -237,7 +237,7 @@ public class app extends JFrame implements ActionListener
 					s8w.getBoard().setStatus(selectedCardLocation, Side8Board.ALLY);
 
 					//Remove the card
-					s8w.getPlayer().remove(new StartCard(playerCardNo));
+					s8w.getPlayer().getHand().remove(new StartCard(playerCardNo));
 					playerBoard.remove(playerCardLocation);
 					playerBoard.add(new JPanel(), playerCardLocation);
 
@@ -266,7 +266,7 @@ public class app extends JFrame implements ActionListener
 	{
 		if(isStartOfGame)
 		{
-			int cardToUse = ((StartCard) s8w.getOpponent().get(0)).getThisNum();
+			int cardToUse = ((StartCard) s8w.getOpponent().getHand().get(0)).getThisNum();
 
 			//Find out how many moves the player has made, and how many moves the opponent has made
 			int playerMoves = 0, opponentMoves = 0;
@@ -292,10 +292,10 @@ public class app extends JFrame implements ActionListener
 				((JButton) gameBoard.getComponent(4)).setText("" + s8w.getBoard().getBoardNumber(4));
 
 				//Remove the cards
-				s8w.getPlayer().remove(new StartCard(playerCardNo));
+				s8w.getPlayer().getHand().remove(new StartCard(playerCardNo));
 				playerBoard.remove(s8w.getCardNo());
 				playerBoard.add(new JPanel(), (int) s8w.getCardNo());
-				s8w.getOpponent().remove(0);
+				s8w.getOpponent().getHand().remove(0);
 				s8w.finishSelection();
 				deselectEverything();
 
@@ -323,7 +323,7 @@ public class app extends JFrame implements ActionListener
 								s8w.getBoard().setStatus(i, Side8Board.ENEMY);
 
 								//Remove the card
-								s8w.getOpponent().remove(0);
+								s8w.getOpponent().getHand().remove(0);
 								break;
 							}
 						}
@@ -360,14 +360,14 @@ public class app extends JFrame implements ActionListener
 
 			if(playerMoves == 4 && opponentMoves == 4)
 			{
-				if(s8w.getPlayer().size() > 1)
+				if(s8w.getPlayer().getHand().size() > 1)
 				{
 					//Time to set the neutrals!
 					if(s8w.getCardNo() == null)
 					{
 						isEnemyTurn = false;
 						//Don't immediately change, append
-						if(s8w.getPlayer().size() == 2)
+						if(s8w.getPlayer().getHand().size() == 2)
 						{
 							gameStatus.setText(gameStatus.getText().substring(0, gameStatus.getText().length() - 13) +
 									"\nSelect a card to compare with the opponent's card.</pre></html>");
@@ -386,8 +386,8 @@ public class app extends JFrame implements ActionListener
 				}
 				else
 				{
-					int playerCard = ((StartCard) s8w.getPlayer().get(0)).getThisNum();
-					int opponentCard = ((StartCard) s8w.getOpponent().get(0)).getThisNum();
+					int playerCard = ((StartCard) s8w.getPlayer().getHand().get(0)).getThisNum();
+					int opponentCard = ((StartCard) s8w.getOpponent().getHand().get(0)).getThisNum();
 					if(playerCard > opponentCard)
 					{
 						gameStatus.setText(gameStatus.getText().substring(0, gameStatus.getText().length() - 13) +
@@ -413,8 +413,8 @@ public class app extends JFrame implements ActionListener
 					}
 					isStartOfGame = false;
 					//Remove the cards from the player's hands
-					s8w.getPlayer().remove(0);
-					s8w.getOpponent().remove(0);
+					s8w.getPlayer().getHand().remove(0);
+					s8w.getOpponent().getHand().remove(0);
 					//Create the game cards and give them to the players
 
 					//Perform the required layout changes (Changing the player's board to 5, etc, dealing the cards)
@@ -424,15 +424,15 @@ public class app extends JFrame implements ActionListener
 					//Deal out the cards to each player
 					for(int i = 0; i < 5; i++)
 					{
-						s8w.getPlayer().add(new NumAtkCard(i + (int) (Math.random() * 6) + 1));
-						s8w.getOpponent().add(new NumAtkCard(i + (int) (Math.random() * 6) + 1));
+						s8w.getPlayer().getHand().add(new NumAtkCard(i + (int) (Math.random() * 6) + 1));
+						s8w.getOpponent().getHand().add(new NumAtkCard(i + (int) (Math.random() * 6) + 1));
 					}
 
 					//Display this information on the board.
 					JButton jb;
 					for(int i = 0; i < 5; i++)
 					{
-						jb = new CardShower(mainPane, s8w.getPlayer().get(i));
+						jb = new CardShower(mainPane, s8w.getPlayer().getHand().get(i));
 						jb.setActionCommand("" + i);
 						jb.addActionListener(this);
 						playerBoard.add(jb);
@@ -588,7 +588,7 @@ public class app extends JFrame implements ActionListener
 					playerBoard.setLayout(new GridLayout(1, 7, 1, 0));
 					for(int i = 0; i < 7; i++)
 					{
-						jb = new JButton("" + ((StartCard) s8w.getPlayer().get(i)).getThisNum());
+						jb = new JButton("" + ((StartCard) s8w.getPlayer().getHand().get(i)).getThisNum());
 						jb.setFont(new Font("Calibri", Font.PLAIN, 18));
 						jb.setBackground(Color.WHITE);
 						jb.setActionCommand("" + i);
@@ -609,13 +609,13 @@ public class app extends JFrame implements ActionListener
 					s8w.restart();
 					s8w.getBoard().createRandomBoard();
 					fillBoard();
-					while(s8w.getPlayer().size() > 1)
+					while(s8w.getPlayer().getHand().size() > 1)
 					{
-						s8w.getPlayer().remove(0);
+						s8w.getPlayer().getHand().remove(0);
 					}
-					while(s8w.getOpponent().size() > 1)
+					while(s8w.getOpponent().getHand().size() > 1)
 					{
-						s8w.getOpponent().remove(0);
+						s8w.getOpponent().getHand().remove(0);
 					}
 
 					//Act as if it's the start of the game by ensuring that the playerboard has 7 components
@@ -625,7 +625,7 @@ public class app extends JFrame implements ActionListener
 					{
 						playerBoard.add(new JPanel());
 					}
-					jb = new JButton("" + ((StartCard) s8w.getPlayer().get(0)).getThisNum());
+					jb = new JButton("" + ((StartCard) s8w.getPlayer().getHand().get(0)).getThisNum());
 					jb.setFont(new Font("Calibri", Font.PLAIN, 18));
 					jb.setBackground(Color.WHITE);
 					jb.setActionCommand("" + 7);
