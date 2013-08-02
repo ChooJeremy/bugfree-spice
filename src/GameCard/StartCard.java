@@ -12,12 +12,12 @@ public class StartCard extends BaseCard
 
 	public StartCard(int num)
 	{
-		super("", "" + num, "" + num, BOTH);
+		super("StartCard", "" + num, "This card represents " + num, BOTH, 0);
 		thisNum = num;
 	}
 
 	@Override
-	public int performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
+	public boolean performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
 	{
 		Side8Board board = s8w.getBoard();
 		if(targets.size() > 1)
@@ -29,7 +29,7 @@ public class StartCard extends BaseCard
 			int target = targets.get(0);
 			board.setBoardNumber(target, thisNum);
 			board.setStatus(target, Side8Board.ALLY);
-			return thisNum;
+			return false;
 		}
 	}
 

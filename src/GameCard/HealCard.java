@@ -4,13 +4,8 @@ import java.util.*;
 
 public abstract class HealCard extends BaseCard
 {
-	public HealCard()
+	public HealCard(String n, String sd, String d, int targets)
 	{
-		super();
-	}
-
-	public HealCard(String n, String sd, String d)
-	{
-		super(n, sd, d, ALLY);
+		super(n, sd, d, ALLY, targets);
 	}
 }

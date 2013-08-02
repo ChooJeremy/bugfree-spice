@@ -23,7 +23,7 @@ public class Side8Player
 	{
 		hand.add(deck.get(0));
 		deck.remove(0);
-		return hand.get(hand.size());
+		return hand.get(hand.size() - 1);
 	}
 
 	public void shuffleDeck()
@@ -48,5 +48,54 @@ public class Side8Player
 	public void removeCardFromHand(BaseCard cardToRemove)
 	{
 		hand.remove(cardToRemove);
+	}
+
+	public int getIndexOfCardInHand(BaseCard card)
+	{
+		return JeremyCopy.searchInArrayList(hand, card);
+	}
+
+	public boolean needsToDiscard()
+	{
+		return hand.size() > 1;
+	}
+
+	public void startTurn()
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			try
+			{
+				draw();
+			}
+			catch(IndexOutOfBoundsException e)
+			{
+				if(i == 0)
+				{
+					throw e;
+				}
+				else
+				{
+					//Ignore, it may just be the last turn, caused by an effect.
+					return;
+				}
+			}
+		}
+	}
+
+	public void endTurn()
+	{
+
+	}
+
+	public void initDeck()
+	{
+		Random random = new Random();
+		deck.clear();
+		//BETA
+		while(deck.size() < 45)
+		{
+			deck.add(new NumAtkCard(random.nextInt(10) + 1));
+		}
 	}
 }

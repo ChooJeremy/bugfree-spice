@@ -29,11 +29,10 @@ public abstract class Jeremy
 	public static void main(String[] args)
 	{
 		Scanner scanner = new Scanner(System.in);
-		for(double i = 0; i < 1; i += 0.0005)
+		for (double progressPercentage = 0.0; progressPercentage < 1.0; progressPercentage += 0.0005)
 		{
-			app anApp = new app();
-			anApp.dispose();
-			createProgress(i);
+			createProgress(progressPercentage);
+			Jeremy.pause(1);
 		}
 	}
 

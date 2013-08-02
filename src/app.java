@@ -19,6 +19,10 @@ public class app extends JFrame implements ActionListener
 	private Border originalBorder;
 	private boolean playerStartFirst;
 	private boolean isStartOfGame;
+	private boolean isPlayAgain;
+	private int turnCounter;
+	private boolean playerHasPlayed;
+	private boolean enemyHasPlayed;
 
 	public app()
 	{
@@ -128,16 +132,64 @@ public class app extends JFrame implements ActionListener
 		}
 	}
 
+	public void fillPlayerHand()
+	{
+		playerBoard.removeAll();
+		playerBoard.setLayout(new GridLayout(1, s8w.getPlayer().getHand().size(), 1, 0));
+		JButton jb;
+		for(int i = 0; i < s8w.getPlayer().getHand().size(); i++)
+		{
+			jb = new CardShower(mainPane, s8w.getPlayer().getHand().get(i));
+			jb.setActionCommand("" + i);
+			jb.addActionListener(this);
+			playerBoard.add(jb);
+		}
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
 		if(isEnemyTurn)
 		{
-			gameStatus.setText("It's the opponent's turn! Please hold on...");
+			//It might be the time for the player to discard his card. Do the check, and if so, discard it.
+			if(!isPlayAgain && s8w.getPlayer().needsToDiscard() && !isStartOfGame && ((JButton) e.getSource()).getBackground() == Color.WHITE)
+			{
+				int selectedCardLocation = Integer.parseInt(e.getActionCommand());
+
+				//Discard the card from the player's hands - it shouldn't be shown on the board
+				s8w.getPlayer().removeCardFromHand(
+					((CardShower) playerBoard.getComponent(selectedCardLocation)).getCardBeingShown()
+				);
+				//Also, now the cardNo selections and the targets are now invalid, invalidate them
+				s8w.finishSelection();
+
+				//Update the hand of the player
+				updatePlayerHand(selectedCardLocation);
+
+				//full update
+				removeHoverOverCard();
+				deselectEverything();
+				fillBoard();
+				repaint();
+				revalidate();
+				allocateNextTurn();
+			}
+			else
+			{
+				if(((JButton) e.getSource()).getBackground() == Color.WHITE)
+				{
+					gameStatus.setText("Please select a card to discard.");
+				}
+				else
+				{
+					gameStatus.setText("It's the opponent's turn! Please hold on...");
+				}
+			}
 			return;
 		}
 		/*
-		System.out.println("Action performed!");
+		S
+		ystem.out.println("Action performed!");
 		System.out.println("Source text: " + ((JButton) e.getSource()).getText());
 		System.out.println("Source: " + e.getSource());
 		System.out.println("Background: " + ((JButton) e.getSource()).getBackground());
@@ -173,7 +225,38 @@ public class app extends JFrame implements ActionListener
 			else
 			{
 				//Game cards are being played
-				System.out.println("Game card played: " + selectedCardLocation);
+
+				//Set the required stuff
+				s8w.setCardNo(s8w.getPlayer().getIndexOfCardInHand(((CardShower) playerBoard.getComponent(selectedCardLocation)).getCardBeingShown()));
+				((JButton) e.getSource()).setBorder(BorderFactory.createLoweredBevelBorder());
+				BaseCard cardBeingPlayed = s8w.getPlayer().getHand().get(s8w.getCardNo());
+
+				//Run the card if possible
+				if(cardBeingPlayed.getTotalTargetsRequired() == 0)
+				{
+					performCardAction(cardBeingPlayed);
+
+					//Discard the card from the player's hands - it shouldn't be shown on the board
+					s8w.getPlayer().removeCardFromHand(cardBeingPlayed);
+					//Also, now the cardNo selections and the targets are now invalid, invalidate them
+					s8w.finishSelection();
+
+					//Update the hand of the player
+					updatePlayerHand(selectedCardLocation);
+
+					//full update
+					removeHoverOverCard();
+					deselectEverything();
+					fillBoard();
+					repaint();
+					revalidate();
+
+					if(isEnemyTurn)
+					{
+						new AppTimer(this, AppTimer.allocateNextTurn, 1000);
+					}
+					System.out.println("Player played card: " + cardBeingPlayed);
+				}
 			}
 		}
 		else
@@ -250,9 +333,9 @@ public class app extends JFrame implements ActionListener
 				else
 				{
 					//Set the required values
-					s8w.setCardNo(selectedCardLocation);
+					s8w.addTargetSelection(selectedCardLocation);
 
-					//Run the card
+					//Run the card if possible
 
 					//Update final stuff
 					deselectEverything();
@@ -334,7 +417,32 @@ public class app extends JFrame implements ActionListener
 		else
 		{
 			//Opponent should now play a card.
-			System.out.println("Enemy does stuff!");
+
+			//Play the first card.
+			BaseCard cardBeingPlayed = s8w.getOpponent().getHand().get(0);
+			System.out.println("Opponent played card: " + cardBeingPlayed);
+
+			//Run the card if possible
+			if(cardBeingPlayed.getTotalTargetsRequired() == 0)
+			{
+				performCardAction(cardBeingPlayed);
+
+				//Discard the card from the opponent's hands - it shouldn't be shown on the board
+				s8w.getOpponent().removeCardFromHand(cardBeingPlayed);
+
+				//full update
+				removeHoverOverCard();
+				deselectEverything();
+				fillBoard();
+				repaint();
+				revalidate();
+
+				if(isEnemyTurn)
+				{
+					new AppTimer(this, AppTimer.allocateNextTurn, 1000);
+				}
+			}
+
 			isEnemyTurn = false;
 		}
 		allocateNextTurn();
@@ -422,10 +530,12 @@ public class app extends JFrame implements ActionListener
 					playerBoard.setLayout(new GridLayout(1, 5, 1, 0));
 
 					//Deal out the cards to each player
+					s8w.getPlayer().initDeck();
+					s8w.getOpponent().initDeck();
 					for(int i = 0; i < 5; i++)
 					{
-						s8w.getPlayer().getHand().add(new NumAtkCard(i + (int) (Math.random() * 6) + 1));
-						s8w.getOpponent().getHand().add(new NumAtkCard(i + (int) (Math.random() * 6) + 1));
+						s8w.getPlayer().draw();
+						s8w.getOpponent().draw();
 					}
 
 					//Display this information on the board.
@@ -441,8 +551,11 @@ public class app extends JFrame implements ActionListener
 					//Run opponent's move if it's the opponent's turn, otherwise wait for user input.
 					if(isEnemyTurn)
 					{
-						new AppTimer(this, AppTimer.allocateNextTurn, 1000);
+						new AppTimer(this, AppTimer.performOpponentsTurn, 2000);
 					}
+					turnCounter = 1;
+					playerHasPlayed = false;
+					enemyHasPlayed = false;
 					repaint();
 					revalidate();
 				}
@@ -552,10 +665,170 @@ public class app extends JFrame implements ActionListener
 		}
 		else
 		{
+			//Find out if it's the end of the player's turn, and force discard if it is
+			if(!isPlayAgain)
+			{
+				if(isEnemyTurn)
+				{
+					//Get the player to discard a card
+					if(s8w.getPlayer().needsToDiscard() && turnCounter < 10) //Don't discard cards on the last turn.
+					{
+						gameStatus.setText("Your turn has ended! Please discard cards as required...");
+						//Do not allocate the enemy's turn.
+						return;
+					}
+					else
+					{
+						s8w.getPlayer().endTurn();
+						playerHasPlayed = true;
+						if(!enemyHasPlayed || turnCounter < 10)
+						{
+							//Do not draw cards for the opponent if this is the very first time the opponent is playing;
+							//since cards are already drawn at the start
+							if(turnCounter != 1 || enemyHasPlayed)
+							{
+								s8w.getOpponent().startTurn();
+							}
+						}
+					}
+				}
+				//End of enemy turn, does he need to discard?
+				else
+				{
+					while(s8w.getOpponent().needsToDiscard())
+					{
+						s8w.getOpponent().getHand().remove(0);
+					}
+					s8w.getOpponent().endTurn();
+					enemyHasPlayed = true;
+					//Don't draw cards on the first turn.
+					if(!playerHasPlayed || turnCounter < 10)
+					{
+						if(turnCounter != 1 || playerHasPlayed)
+						{
+							s8w.getPlayer().startTurn();
+							fillPlayerHand();
+							revalidate();
+						}
+					}
+				}
+
+				if(enemyHasPlayed && playerHasPlayed)
+				{
+					if(turnCounter == 10)
+					{
+						//GAME ENDS!
+						int playerCount = s8w.getBoard().getPlayerCount();
+						int enemyCount = s8w.getBoard().getEnemyCount();
+						if(playerCount - enemyCount > 0)
+						{
+							gameStatus.setText("<html><pre>The game is over!\nYour total: " + playerCount + "\tEnemy total: " + enemyCount + "\nYou win!</pre></html>");
+						}
+						else if(playerCount == enemyCount)
+						{
+							gameStatus.setText("<html><pre>The game is over!\nYour total: " + playerCount + "\tEnemy total: " + enemyCount + "\nIt's a draw!</pre></html>");
+						}
+						else
+						{
+							gameStatus.setText("<html><pre>The game is over!\nYour total: " + playerCount + "\tEnemy total: " + enemyCount + "\nYou lose!</pre></html>");
+						}
+						return;
+					}
+					else
+					{
+						System.out.println("Turn " + ++turnCounter + "/10");
+						System.out.println("Cards left in deck: " + s8w.getPlayer().getDeck().size() + "(Player) " + s8w.getOpponent().getDeck().size() + "(Opponent)");
+						enemyHasPlayed = false;
+						playerHasPlayed = false;
+					}
+				}
+			}
 			//Gameplay, allocate the turn correctly.
 			if(isEnemyTurn)
 			{
 				new AppTimer(this, AppTimer.performOpponentsTurn, 1000);
+			}
+			else
+			{
+				gameStatus.setText("It's now your turn! Pick a card to play...");
+			}
+		}
+	}
+
+	public void performCardAction(BaseCard cardToPlay)
+	{
+		//Format the board accordingly if required
+		if(isEnemyTurn)
+		{
+			Side8Board boardToSend = s8w.getBoard().performConversion();
+			s8w.getBoard().copyBoard(boardToSend);
+		}
+
+		isPlayAgain = cardToPlay.performAction(s8w, s8w.getTargetSelection());
+
+		//Reset it back if required
+		if(isEnemyTurn)
+		{
+			Side8Board normalBoard = s8w.getBoard().performConversion();
+			s8w.getBoard().copyBoard(normalBoard);
+		}
+
+		if(!isPlayAgain)
+		{
+			//False, the user cannot play again.
+			isEnemyTurn = !isEnemyTurn;
+		}
+	}
+
+	public void removeHoverOverCard()
+	{
+		//Remove the hover-over card (if any)
+		for(Component aComponent : mainPane.getComponentsInLayer(JLayeredPane.POPUP_LAYER))
+		{
+			mainPane.remove(aComponent);
+		}
+	}
+
+	public void updatePlayerHand(int cardUserPlayed)
+	{
+		//We want to update the hand. We want to leave a hole in the card the user played so that the ui looks nice and is smooth.
+		//Firstly, get all the locations where it is a JPanel and not a real card
+		ArrayList<Integer> locationsWhereJPanel = new ArrayList<>();
+		for(int i = 0; i < playerBoard.getComponentCount(); i++)
+		{
+			if(playerBoard.getComponent(i) instanceof JPanel)
+			{
+				locationsWhereJPanel.add(i);
+			}
+		}
+
+		//Also, the current one will be a JPanel
+		locationsWhereJPanel.add(cardUserPlayed);
+		Collections.sort(locationsWhereJPanel);
+
+		//Then, remove everything. Set the new layout, and add the JPanel at the relevant locations, including the new one.
+		playerBoard.removeAll();
+		playerBoard.setLayout(new GridLayout(1, s8w.getPlayer().getHand().size() + locationsWhereJPanel.size(), 1, 0));
+		int currentPlayerHandPointer = 0;
+		int currentJPanelPointer = 0;
+		JButton jb;
+		for(int i = 0; i < ((GridLayout) playerBoard.getLayout()).getColumns(); i++)
+		{
+			if(i == locationsWhereJPanel.get(currentJPanelPointer))
+			{
+				playerBoard.add(new JPanel());
+				//Only increment if it's not the last
+				if(locationsWhereJPanel.size() - 1 != currentJPanelPointer)
+				{
+					currentJPanelPointer++;
+				}
+			}
+			else
+			{
+				jb = new CardShower(mainPane, s8w.getPlayer().getHand().get(currentPlayerHandPointer++));
+				jb.setActionCommand("" + i);
+				jb.addActionListener(this);
+				playerBoard.add(jb);
 			}
 		}
 	}
@@ -567,7 +840,6 @@ public class app extends JFrame implements ActionListener
 		boolean exit = false;
 		boolean isDisposed = false;
 		JButton jb;
-		//newgame, Randomboard, (un)instant, repaint/revalidate, dispose, new, restart/reboot, exit
 		System.out.println("Ready.");
 		do
 		{
@@ -694,6 +966,11 @@ public class app extends JFrame implements ActionListener
 				case "dump":
 					dump();
 					break;
+				case "updateui":
+					fillBoard();
+					fillPlayerHand();
+					System.out.println("Done.");
+					break;
 				case "test":
 					JPanel jp = new JPanel();
 					jp.setBackground(Color.RED);
@@ -719,7 +996,7 @@ public class app extends JFrame implements ActionListener
 				// ------------------------------ Fixed due to reliance on lack of break; statements. --------------------
 				default:
 					System.out.println("Unrecognized input. Please try again.");
-					System.out.println("Accepted input: newgame, Randomboard, (un)instant, repaint/revalidate, dispose, dump, new, restart/reboot, exit");
+					System.out.println("Accepted input: newgame, Randomboard, (un)instant, repaint/revalidate, dispose, dump, updateUI, new, restart/reboot, exit");
 					break;
 			}
 		} while (!exit);

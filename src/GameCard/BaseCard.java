@@ -13,14 +13,9 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	private String description;
 	private String shortDescription;
 	private int type;
-	private int change;
+	private int totalTargetsRequired;
 
-	public BaseCard()
-	{
-
-	}
-
-	public BaseCard(String n, String sd, String d, int t)
+	public BaseCard(String n, String sd, String d, int t, int targets)
 	{
 		if(t != ALLY && t != ENEMY && t != BOTH)
 		{
@@ -30,12 +25,14 @@ public abstract class BaseCard implements Comparable<BaseCard>
 		shortDescription = sd;
 		description = d;
 		type = t;
+		totalTargetsRequired = targets;
 	}
 
 	public String getName() { return name;}
 	public String getLongDescription() {return description;}
 	public String getShortDescription() {return shortDescription;}
 	public int getType() {return type;}
+	public int getTotalTargetsRequired() {return totalTargetsRequired; }
 
 	public static String getAttackType(int type)
 	{
@@ -59,13 +56,9 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	 * @param currentStatus the current game board and the player's hands.
 	 * @param targets the targets selected (0-8), horizontal first. Cards that only take in 1 target should have a limit of 1 in this
 	 *                arraylist.
-	 * @return the total damage or healing done to the board. If both healing and damage is dealt, the total is given.
-	 *         For example, this card deals 2 damage to a unit, heals another unit for 2 hp. The targeted unit in this board
-	 *         currently has a number of 1. This will cause it to deal 1 damage, heal another for 2, then, because the "1" card
-	 *         is defeated, in turns to 3 in favour of the user, thereby causing a total difference of 1 + 2 + 3, or 6. The method
-	 *         will thus return 6.
+	 * @return whether the player gets to play again or not. Most cards will return false, some may return true.
 	 */
-	public abstract int performAction(Side8Wrapper currentStatus, ArrayList<Integer> targets);
+	public abstract boolean performAction(Side8Wrapper currentStatus, ArrayList<Integer> targets);
 
 	@Override
 	public String toString()

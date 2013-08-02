@@ -4,13 +4,8 @@ import java.util.*;
 
 public abstract class AttackCard extends BaseCard
 {
-	public AttackCard()
+	public AttackCard(String n, String sd, String d, int targets)
 	{
-		super();
-	}
-
-	public AttackCard(String n, String sd, String d)
-	{
-		super(n, sd, d, ENEMY);
+		super(n, sd, d, ENEMY, targets);
 	}
 }

@@ -9,21 +9,18 @@ public class Side8Board
 	public static final int ENEMY = 2;
 	public static final int NEUTRAL = 3;
 
-	private int[][] board;
-	private int[][] status;
+	private Side8BoardItem[] board;
 
 	public Side8Board()
 	{
-		board = new int[3][3];
-		status = new int[3][3];
-		//Start everything off as neutral
-		for(int i = 0; i < 9; i++)
+		board = new Side8BoardItem[9];
+		for(int i = 0; i < board.length; i++)
 		{
-			setStatus(i, NEUTRAL);
+			board[i] = new Side8BoardItem();
 		}
 	}
 
-	public int[][] getBoard() {return board; }
+	public Side8BoardItem[] getBoard() {return board; }
 
 	public void createRandomBoard()
 	{
@@ -43,98 +40,33 @@ public class Side8Board
 				setStatus(numbers[i], ALLY);
 			}
 		}
-		board[1][1] = random.nextInt(6);
-		status[1][1] = NEUTRAL;
+		board[4].setCurrentNum(random.nextInt(6));
+		board[4].setType(NEUTRAL);
 	}
 
 	public void setBoardNumber(int location, int number)
 	{
-		switch(location)
-		{
-			case 0:
-			case 1:
-			case 2:
-				board[0][location] = number;
-				break;
-			case 3:
-			case 4:
-			case 5:
-				board[1][location - 3] = number;
-				break;
-			case 6:
-			case 7:
-			case 8:
-				board[2][location - 6] = number;
-				break;
-			default:
-				throw new RuntimeException("Invalid location " + location);
-		}
+		board[location].setCurrentNum(number);
 	}
 
 	public void setStatus(int location, int newStatus)
 	{
-		switch(location)
-		{
-			case 0:
-			case 1:
-			case 2:
-				status[0][location] = newStatus;
-				break;
-			case 3:
-			case 4:
-			case 5:
-				status[1][location - 3] = newStatus;
-				break;
-			case 6:
-			case 7:
-			case 8:
-				status[2][location - 6] = newStatus;
-				break;
-			default:
-				throw new RuntimeException("Invalid location " + location);
-		}
+		board[location].setType(newStatus);
 	}
 
 	public int getBoardNumber(int location)
 	{
-		switch(location)
-		{
-			case 0:
-			case 1:
-			case 2:
-				return board[0][location];
-			case 3:
-			case 4:
-			case 5:
-				return board[1][location - 3];
-			case 6:
-			case 7:
-			case 8:
-				return board[2][location - 6];
-			default:
-				throw new RuntimeException("Invalid location " + location);
-		}
+		return board[location].getCurrentNum();
 	}
 
 	public int getStatus(int location)
 	{
-		switch(location)
-		{
-			case 0:
-			case 1:
-			case 2:
-				return status[0][location];
-			case 3:
-			case 4:
-			case 5:
-				return status[1][location - 3];
-			case 6:
-			case 7:
-			case 8:
-				return status[2][location - 6];
-			default:
-				throw new RuntimeException("Invalid location " + location);
-		}
+		return board[location].getType();
+	}
+
+	public Side8BoardItem getBoardItem(int location)
+	{
+		return board[location];
 	}
 
 	public static String getStatusInText(int status)
@@ -186,12 +118,12 @@ public class Side8Board
 	public String getBoardView()
 	{
 		String result = "---------------------------------\n";
-		for(int i = 0; i < board.length; i++)
+		for(int i = 0; i < 3; i++)
 		{
 			result += "|\t";
-			for(int j = 0; j < board[i].length; j++)
+			for(int j = 0; j < 3; j++)
 			{
-				result += board[i][j] + getStatusInText(status[i][j]).substring(0, 1) + "\t";
+				result += board[i*3+j].getCurrentNum() + getStatusInText(board[i*3+j].getType()).substring(0, 1) + "\t";
 			}
 			result += "|\n";
 		}
@@ -209,5 +141,31 @@ public class Side8Board
 					+ getBoardNumber(i+2) + getStatusInText(getStatus(i+2)) + "\n";
 		}
 		return result;
+	}
+
+	public int getPlayerCount()
+	{
+		int total = 0;
+		for(Side8BoardItem aBoard : board)
+		{
+			if(aBoard.getType() == ALLY)
+			{
+				total += aBoard.getCurrentNum();
+			}
+		}
+		return total;
+	}
+
+	public int getEnemyCount()
+	{
+		int total = 0;
+		for(Side8BoardItem aBoard : board)
+		{
+			if(aBoard.getType() == ENEMY)
+			{
+				total += aBoard.getCurrentNum();
+			}
+		}
+		return total;
 	}
 }

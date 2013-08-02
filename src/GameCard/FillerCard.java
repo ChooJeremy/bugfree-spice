@@ -9,14 +9,14 @@ public class FillerCard extends BaseCard
 {
 	public FillerCard()
 	{
-		super("Card Filler", "Description Description Description Description Description Description", "This is a filler card.", BOTH);
+		super("Card Filler", "Description Description Description Description Description Description", "This is a filler card.", BOTH, 0);
 	}
 
 	@Override
-	public int performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
+	public boolean performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
 	{
 		//Filler card deals 0 damage and does absolutely nothing
-		return 0;
+		return false;
 	}
 
 
