@@ -22,18 +22,6 @@ public class TowerOfHanoi
 		}
 	}
 
-	public ArrayList<TowerOfHanoiItem> getFirstTower() {
-		return firstTower;
-	}
-
-	public ArrayList<TowerOfHanoiItem> getSecondTower() {
-		return secondTower;
-	}
-
-	public ArrayList<TowerOfHanoiItem> getThirdTower() {
-		return thirdTower;
-	}
-
 	public void move(int towerToStart, int towerToEnd)
 	{
 		TowerOfHanoiItem itemToMove = null;
@@ -104,21 +92,6 @@ public class TowerOfHanoi
 			throw new RuntimeException("FU: Current tower: \n" + this.toString() + "Movement from " + towerToStart + " to " + towerToEnd);
 		}
 		movements++;
-	}
-
-	public ArrayList<TowerOfHanoiItem> getTower(int tower)
-	{
-		switch(tower)
-		{
-			case FIRST:
-				return getFirstTower();
-			case SECOND:
-				return getSecondTower();
-			case THIRD:
-				return getThirdTower();
-			default:
-				throw new RuntimeException("" + tower);
-		}
 	}
 
 	@Override

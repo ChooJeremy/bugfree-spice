@@ -14,7 +14,7 @@ public class TextShower extends JFrame
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		textArea = new JTextArea();
-		textArea.setFont(new Font("monospace", Font.PLAIN, 20));
+		textArea.setFont(new Font("Monospaced", Font.PLAIN, 20));
 		this.add(textArea);
 	}
 
