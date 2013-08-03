@@ -679,7 +679,7 @@ public class app extends JFrame implements ActionListener
 					}
 					else
 					{
-						s8w.getPlayer().endTurn();
+						s8w.endPlayerTurn();
 						playerHasPlayed = true;
 						if(!enemyHasPlayed || turnCounter < 10)
 						{
@@ -687,7 +687,7 @@ public class app extends JFrame implements ActionListener
 							//since cards are already drawn at the start
 							if(turnCounter != 1 || enemyHasPlayed)
 							{
-								s8w.getOpponent().startTurn();
+								s8w.startEnemyTurn();
 							}
 						}
 					}
@@ -699,14 +699,14 @@ public class app extends JFrame implements ActionListener
 					{
 						s8w.getOpponent().getHand().remove(0);
 					}
-					s8w.getOpponent().endTurn();
+					s8w.endEnemyTurn();
 					enemyHasPlayed = true;
 					//Don't draw cards on the first turn.
 					if(!playerHasPlayed || turnCounter < 10)
 					{
 						if(turnCounter != 1 || playerHasPlayed)
 						{
-							s8w.getPlayer().startTurn();
+							s8w.startPlayerTurn();
 							fillPlayerHand();
 							revalidate();
 						}

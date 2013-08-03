@@ -119,4 +119,44 @@ public class Side8Wrapper
 		result += "[" + player.getHandInString() + "]";
 		return result;
 	}
+
+	/**
+	 * Forwards the start player turn call to every item in this wrapper.
+	 *
+	 */
+	public void startPlayerTurn()
+	{
+		player.startTurn();
+		board.startPlayerTurn();
+	}
+
+	/**
+	 * Forwards the end player turn call to every item in this wrapper.
+	 *
+	 */
+	public void endPlayerTurn()
+	{
+		player.endTurn();
+		board.endPlayerTurn();
+	}
+
+	/**
+	 * Forwards the start enemy turn call to every item in this wrapper.
+	 *
+	 */
+	public void startEnemyTurn()
+	{
+		opponent.startTurn();
+		board.startEnemyTurn();
+	}
+
+	/**
+	 * Forwards the end enemy turn call to every item in this wrapper.
+	 *
+	 */
+	public void endEnemyTurn()
+	{
+		opponent.endTurn();
+		board.endEnemyTurn();
+	}
 }

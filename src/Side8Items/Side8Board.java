@@ -168,4 +168,53 @@ public class Side8Board
 		}
 		return total;
 	}
+
+	public void startPlayerTurn()
+	{
+	}
+
+	public void endPlayerTurn()
+	{
+		//Calculate the total number of squares the player owns
+		ArrayList<Integer> choices = new ArrayList<>();
+		for(int i = 0; i < board.length; i++)
+		{
+			if(board[i].getType() == ALLY)
+			{
+				choices.add(i);
+			}
+		}
+		//Nothing to increase
+		if(choices.size() == 0)
+		{
+			return;
+		}
+		int numberToIncreaseBy = Math.min(0, choices.size() - 4) + 2;
+		//Increase a random one by that
+		board[choices.get((int) (Math.random() * choices.size()))].takeDamage(numberToIncreaseBy * -1, ALLY);
+	}
+
+	public void startEnemyTurn()
+	{
+	}
+
+	public void endEnemyTurn()
+	{
+		//Calculate the total number of squares the player owns
+		ArrayList<Integer> choices = new ArrayList<>();
+		for(int i = 0; i < board.length; i++)
+		{
+			if(board[i].getType() == ENEMY)
+			{
+				choices.add(i);
+			}
+		}
+		int numberToIncreaseBy = Math.min(0, choices.size() - 4) + 2;
+		if(choices.size() == 0)
+		{
+			return;
+		}
+		//Increase a random one by that
+		board[choices.get((int) (Math.random() * choices.size()))].takeDamage(numberToIncreaseBy * -1, ENEMY);
+	}
 }
