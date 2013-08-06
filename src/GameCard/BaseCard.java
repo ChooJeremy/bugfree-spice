@@ -12,10 +12,11 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	private String name;
 	private String description;
 	private String shortDescription;
+	private String flavourText;
 	private int type;
 	private int totalTargetsRequired;
 
-	public BaseCard(String n, String sd, String d, int t, int targets)
+	public BaseCard(String n, String sd, String d, String ft, int t, int targets)
 	{
 		if(t != ALLY && t != ENEMY && t != BOTH)
 		{
@@ -24,6 +25,7 @@ public abstract class BaseCard implements Comparable<BaseCard>
 		name = n;
 		shortDescription = sd;
 		description = d;
+		flavourText  = ft;
 		type = t;
 		totalTargetsRequired = targets;
 	}
@@ -31,6 +33,7 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	public String getName() { return name;}
 	public String getLongDescription() {return description;}
 	public String getShortDescription() {return shortDescription;}
+	public String getFlavourText() {return flavourText;}
 	public int getType() {return type;}
 	public int getTotalTargetsRequired() {return totalTargetsRequired; }
 

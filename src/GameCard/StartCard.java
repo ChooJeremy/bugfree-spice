@@ -12,7 +12,7 @@ public class StartCard extends BaseCard
 
 	public StartCard(int num)
 	{
-		super("StartCard", "" + num, "This card represents " + num, BOTH, 0);
+		super("StartCard", "" + num, "This card represents " + num, "A representation of something... big?", BOTH, 0);
 		thisNum = num;
 	}
 

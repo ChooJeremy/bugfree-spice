@@ -13,6 +13,7 @@ public class NumAtkCard extends AttackCard
 		super(number + " destructor",
 				"All cards with " + number + " takes 3 damage",
 				"Targets all cards on the battlefield with the number " + number + ". Deal 3 damage to all of them.",
+				"When you're hated by others and hunted down, don't expect to survive for long...",
 				0);
 		selectedNumber = number;
 	}

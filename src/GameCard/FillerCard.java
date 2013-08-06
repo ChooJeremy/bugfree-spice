@@ -9,7 +9,7 @@ public class FillerCard extends BaseCard
 {
 	public FillerCard()
 	{
-		super("Card Filler", "Description Description Description Description Description Description", "This is a filler card.", BOTH, 0);
+		super("Card Filler", "Description Description Description Description Description Description", "This is a filler card.", "It's said that this was one of the first cards ever created...", BOTH, 0);
 	}
 
 	@Override

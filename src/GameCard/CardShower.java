@@ -73,7 +73,7 @@ public class CardShower extends JButton implements MouseListener
 		largePicture.setText("Picture");
 		largePicture.setBackground(Color.CYAN);
 		largePicture.setOpaque(true);
-		largePicture.setPreferredSize(new Dimension(150, 50));
+		largePicture.setPreferredSize(new Dimension(LARGE_WIDTH - 25, 50));
 		largeCard.add(largePicture);
 
 		//Description
@@ -82,8 +82,18 @@ public class CardShower extends JButton implements MouseListener
 		longDescription.setWrapStyleWord(true);
 		longDescription.setLineWrap(true);
 		longDescription.setEditable(false);
-		longDescription.setPreferredSize(new Dimension(150, 110));
+		longDescription.setPreferredSize(new Dimension(LARGE_WIDTH - 25, LARGE_HEIGHT - 110));
 		largeCard.add(longDescription);
+
+		//flavourText
+		JTextArea flavourText = new JTextArea();
+		flavourText.setText(card.getFlavourText());
+		flavourText.setWrapStyleWord(true);
+		flavourText.setLineWrap(true);
+		flavourText.setEditable(false);
+		flavourText.setFont(new Font("Dialog", Font.ITALIC, 8));
+		flavourText.setPreferredSize(new Dimension(LARGE_WIDTH - 25, 20));
+		largeCard.add(flavourText);
 	}
 
 	@Override
