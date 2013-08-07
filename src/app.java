@@ -11,7 +11,6 @@ import javax.swing.border.Border;
 public class app extends JFrame implements ActionListener
 {
 	private JLayeredPane mainPane;
-	private Container container;
 	private JLabel gameStatus;
 	private Container gameBoard, playerBoard;
 	private Side8Wrapper s8w;
@@ -41,7 +40,7 @@ public class app extends JFrame implements ActionListener
 		this.getContentPane().add(mainPane);
 
 		//Create the main container that will hold all our stuff
-		container = new JPanel();
+		Container container = new JPanel();
 		container.setLayout(new GridLayout(3, 1, 0, 5));
 		container.setLocation(0, 0);
 		//Size will be set in the component listener.
