@@ -93,6 +93,7 @@ public class Side8BoardItem extends JButton
 		else
 		{
 			//There is a change
+
 			this.setBackground(expectedColor);
 		}
 	}
