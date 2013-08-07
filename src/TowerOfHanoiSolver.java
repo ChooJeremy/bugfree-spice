@@ -31,13 +31,13 @@ public class TowerOfHanoiSolver
 		}
 		towerToSolve = new TowerOfHanoi(totalPieces);
 		textShower = new TextShower("Tower of Hanoi");
-		move(FIRST, THIRD, totalPieces);
+		move(FIRST, THIRD, totalPieces, SECOND);
 		System.out.println("Total movements: " + TowerOfHanoi.movements);
 		Jeremy.pause(timeToPause * 50);
 		textShower.dispose();
 	}
 
-	public static void move(int start, int end, int numOfPieces)
+	public static void move(int start, int end, int numOfPieces, int other)
 	{
 		if(numOfPieces == 1)
 		{
@@ -45,14 +45,10 @@ public class TowerOfHanoiSolver
 			afterMovement();
 			return;
 		}
-		int other = 0;
-		do {
-			other++;
-		} while(start + end + other < FIRST + SECOND + THIRD);
-		move(start, other, numOfPieces - 1);
+		move(start, other, numOfPieces - 1, end);
 		towerToSolve.move(start, end);
 		afterMovement();
-		move(other, end, numOfPieces - 1);
+		move(other, end, numOfPieces - 1, start);
 	}
 
 	public static void afterMovement()

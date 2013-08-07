@@ -97,4 +97,8 @@ public class Side8BoardItem extends JButton
 			this.setBackground(expectedColor);
 		}
 	}
+
+	public void transition(Color beginColor, Color endColor, long time)
+	{
+	}
 }
