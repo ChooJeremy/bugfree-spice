@@ -2,7 +2,6 @@ package Side8Items;
 
 import GameCard.*;
 import Helper.JeremyCopy;
-
 import java.util.*;
 
 public class Side8Wrapper

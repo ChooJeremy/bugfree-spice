@@ -19,5 +19,11 @@ public class FillerCard extends BaseCard
 		return false;
 	}
 
+	@Override
+	public ArrayList<Integer> getAISelectionOfTargets(Side8Wrapper currentStatus)
+	{
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
 
 }

@@ -1,6 +1,11 @@
 package GameCard;
 
 import Side8Items.*;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public abstract class BaseCard implements Comparable<BaseCard>
@@ -15,6 +20,7 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	private String flavourText;
 	private int type;
 	private int totalTargetsRequired;
+	private BufferedImage image;
 
 	public BaseCard(String n, String sd, String d, String ft, int t, int targets)
 	{
@@ -36,6 +42,20 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	public String getFlavourText() {return flavourText;}
 	public int getType() {return type;}
 	public int getTotalTargetsRequired() {return totalTargetsRequired; }
+	public BufferedImage getImage() {return image; }
+
+	public void setImage(String imageFilePath)
+	{
+		try
+		{
+			image = ImageIO.read(new File(imageFilePath));
+		}
+		catch (IOException ioe)
+		{
+			System.out.println("Cannot set image for: " + this.getName());
+			ioe.printStackTrace();
+		}
+	}
 
 	public static String getAttackType(int type)
 	{
@@ -60,8 +80,21 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	 * @param targets the targets selected (0-8), horizontal first. Cards that only take in 1 target should have a limit of 1 in this
 	 *                arraylist.
 	 * @return whether the player gets to play again or not. Most cards will return false, some may return true.
+	 *
+	 * @see BaseCard#getAISelectionOfTargets(Side8Items.Side8Wrapper) Finding the best target selection as an AI.
 	 */
 	public abstract boolean performAction(Side8Wrapper currentStatus, ArrayList<Integer> targets);
+
+	/**
+	 * Gets a list of targets that would be most beneficialto the "opponent" part in Side8Wrapper given the current circumstances,
+	 * as dictated by the action of the card
+	 *
+	 * @param currentStatus the current game board and the player's hands
+	 * @return the targets that would be best selected
+	 *
+	 * @see BaseCard#performAction(Side8Items.Side8Wrapper, java.util.ArrayList) Where the action is actually performed
+	 */
+	public abstract ArrayList<Integer> getAISelectionOfTargets(Side8Wrapper currentStatus);
 
 	@Override
 	public String toString()

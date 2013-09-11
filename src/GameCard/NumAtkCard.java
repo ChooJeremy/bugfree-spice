@@ -32,4 +32,10 @@ public class NumAtkCard extends AttackCard
 		}
 		return false;
 	}
+
+	@Override
+	public ArrayList<Integer> getAISelectionOfTargets(Side8Wrapper currentStatus)
+	{
+		return new ArrayList<>();
+	}
 }

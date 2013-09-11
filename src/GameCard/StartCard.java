@@ -34,6 +34,12 @@ public class StartCard extends BaseCard
 	}
 
 	@Override
+	public ArrayList<Integer> getAISelectionOfTargets(Side8Wrapper currentStatus)
+	{
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
 	public int compareTo(BaseCard o)
 	{
 		StartCard sc = (StartCard) o;

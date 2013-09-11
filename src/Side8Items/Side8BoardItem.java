@@ -1,6 +1,7 @@
 package Side8Items;
 
 import Buffs.BaseBuff;
+import Helper.JeremyCopy;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +12,9 @@ public class Side8BoardItem extends JButton
 	public static final int ALLY = 1;
 	public static final int ENEMY = 2;
 	public static final int NEUTRAL = 3;
+	public static final int TEXTWIDTH = 100;
+	public static final int TEXTHEIGHT = 50;
+	public static final int TRANSITIONSTEPS = 50;
 	public static final Integer DAMAGENUMBERPANE = new Integer(250);
 
 	private int currentNum;
@@ -71,6 +75,11 @@ public class Side8BoardItem extends JButton
 
 	public void updateValues()
 	{
+		updateValues(true);
+	}
+
+	public void updateValues(boolean doTransition)
+	{
 		int numberInUI = Integer.parseInt(getText());
 		this.setText("" + currentNum);
 		Color expectedColor = null;
@@ -86,19 +95,82 @@ public class Side8BoardItem extends JButton
 				expectedColor = Color.LIGHT_GRAY;
 				break;
 		}
-		if(this.getBackground() == expectedColor)
+		if(doTransition)
 		{
-			//No change
+			if(this.getBackground() == expectedColor)
+			{
+				//No change in colour, check for change in number
+				if(numberInUI != currentNum)
+				{
+					mainPaneReference.add(createLabelWithChange(currentNum - numberInUI));
+				}
+			}
+			else
+			{
+				//There is a change
+				//Firstly, create a new label that shows the previous number being set to 0.
+				mainPaneReference.add(createLabelWithChange(numberInUI * -1));
+				//Transition it to the new colout
+				transition(this.getBackground(), expectedColor, 2000);
+			}
 		}
 		else
 		{
-			//There is a change
-
 			this.setBackground(expectedColor);
 		}
 	}
 
+	public JLabel createLabelWithChange(int change)
+	{
+		if(change == 0)
+		{
+			System.out.println("Change of 0 detected!");
+		}
+		//Get the middle location to find where to show the label.
+		Point labelMiddle = this.getLocationOnScreen();
+		labelMiddle.translate(
+				mainPaneReference.getLocationOnScreen().x * -1,
+				mainPaneReference.getLocationOnScreen().y * -1
+		);
+		labelMiddle.translate(
+				this.getWidth(),
+				this.getHeight()
+		);
+		JLabel result = new JLabel("" + change);
+		if(change >= 0)
+		{
+			result.setText("+" + result.getText());
+			result.setForeground(Color.GREEN);
+		}
+		else
+		{
+			result.setForeground(Color.RED);
+		}
+		labelMiddle.translate(
+				TEXTWIDTH * -1,
+				TEXTHEIGHT * -1
+		);
+		result.setBounds(labelMiddle.x, labelMiddle.y, TEXTWIDTH, TEXTHEIGHT);
+		return result;
+	}
+
 	public void transition(Color beginColor, Color endColor, long time)
 	{
+		int pauseTime = (int) time / TRANSITIONSTEPS;
+		double rChange = (beginColor.getRed() - endColor.getRed()) * 1.0 / TRANSITIONSTEPS;
+		double bChange = (beginColor.getBlue() - endColor.getBlue()) * 1.0 / TRANSITIONSTEPS;
+		double gChange = (beginColor.getGreen() - endColor.getGreen()) * 1.0 / TRANSITIONSTEPS;
+		double r, g, b;
+		r = beginColor.getRed();
+		g = beginColor.getGreen();
+		b = beginColor.getBlue();
+		for(int i = 0; i < TRANSITIONSTEPS; i++)
+		{
+			r += rChange;
+			g += gChange;
+			b += bChange;
+			this.setBackground(new Color((int) r, (int) g, (int) b));
+			JeremyCopy.pause(pauseTime);
+		}
 	}
 }
