@@ -23,7 +23,6 @@
 //However, you can try reading the codes to learn how any AI works, but be warned, learning how the   //
 //AI works could cause the game to no longer be fun, where you begin to strategize based on the code. //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-import java.util.Scanner;     //Required to use the scanner function
 import java.util.Random;		//Required to use the Rand() function
 public class IndianPoker
 {
@@ -36,9 +35,15 @@ public class IndianPoker
 	static String mode;
 	static int[] CardsInDeck = new int[52];
 	static int currentCard;
+	static JTextAreaInputStreamScanner input;
+
+	public static void setScanner(JTextAreaInputStreamScanner s)
+	{
+		input = s;
+	}
+
 	public static void main(String[] args)
 	{
-		Scanner input = new Scanner(System.in);
 		Random generator = new Random();
 		char startGame;
 		init_CardsInDeck();
@@ -168,8 +173,7 @@ public class IndianPoker
 					break;
 				case "/QUIT":
 					System.out.println("WHAT? You're not even playing? God...why did you run this?");
-					System.exit(0);
-					break;
+					return;
 				default:
 					System.out.println("You have entered an incorrect answer that does not match either of the options. Please try again.");
 					mode = "Repeat";
@@ -202,7 +206,6 @@ public class IndianPoker
 
 	public static void BeginnerAI()
 	{
-		Scanner input = new Scanner(System.in); //Allows usage of Scanner
 		Random generator = new Random();			//Allows usage of Random();
 		do
 		{
@@ -254,7 +257,6 @@ public class IndianPoker
 
 	public static void AdvancedAI()
 	{
-		Scanner input = new Scanner(System.in); //Allows usage of Scanner
 		Random generator = new Random();			//Allows usage of Random();
 		do
 		{
@@ -444,7 +446,6 @@ public class IndianPoker
 
 	public static void Human()
 	{
-		Scanner input = new Scanner(System.in);
 		Random generator = new Random();
 		int turns = 0, maxturn;	//How human AI works is that there are four forms. In form 1, humanAI lies and is more
 		maxturn = generator.nextInt(3) + 3; //likely to believe you. In form 2, humanAI tells the truth and is more likely
@@ -585,7 +586,6 @@ public class IndianPoker
 
 	public static void FML()
 	{
-		Scanner input = new Scanner(System.in); //Allows usage of Scanner
 		Random generator = new Random();			//Allows usage of Random();
 		int comTemp, playerTemp;
 		int aceCount = 0;
@@ -812,7 +812,6 @@ public class IndianPoker
 
 	public static void Phase2()
 	{
-		Scanner input = new Scanner(System.in);
 		Random generator = new Random();
 		do
 		{

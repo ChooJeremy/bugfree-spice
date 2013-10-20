@@ -1,20 +1,16 @@
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 
-public class PrintDisplayer extends JFrame implements KeyListener
+public class PrintDisplayer extends JFrame
 {
 	public final int INPUT_HEIGHT = 60;
 
 	private JTextArea input;
 	private JTextArea output;
 	private JScrollPane outputScroller;
+	private JTextAreaInputStream inputStream;
 
 	public PrintDisplayer()
 	{
@@ -25,7 +21,7 @@ public class PrintDisplayer extends JFrame implements KeyListener
 		revalidate();
 		repaint();
 
-		output = new JTextArea(){     /*
+		output = new JTextArea(){
 			@Override
 			public void setText(String s)
 			{
@@ -34,8 +30,42 @@ public class PrintDisplayer extends JFrame implements KeyListener
 				FontMetrics fontMetrics = getFontMetrics(getFont());
 				int lineHeight = fontMetrics.getAscent() + fontMetrics.getDescent();
 				//http://stackoverflow.com/questions/17005336/count-number-of-lines-in-jtextarea-given-set-width
-				//Calculate the total
-			}                           */
+				//For every line, Split the string into words, check if it exceeds the allowed width, add 1 if so
+				String[] lines = s.split("\n");
+				String[] words;
+				boolean firstWord;
+				String sentence;
+				int totalLines = 0;
+				for(String aLine : lines)
+				{
+					totalLines++;
+					words = aLine.split(" ");
+					sentence = "";
+					firstWord = true;
+					for(String aWord : words)
+					{
+						sentence += aWord + (firstWord ? "" : " ");
+						firstWord = false;
+						if(fontMetrics.stringWidth(sentence) > this.getWidth())
+						{
+							totalLines++;
+							sentence = "";
+							firstWord = true;
+						}
+					}
+				}
+				int finalTextHeight = lineHeight * totalLines;
+				if(finalTextHeight > this.getHeight())
+				{
+					//Remove the first line and call this method again
+					int firstNewLine = s.indexOf("\n");
+					setText(s.substring(firstNewLine + 1, s.length()));
+				}
+				else
+				{
+					super.setText(s);
+				}
+			}
 		};
 		input = new JTextArea();
 		outputScroller = new JScrollPane();
@@ -59,7 +89,8 @@ public class PrintDisplayer extends JFrame implements KeyListener
 		output.setWrapStyleWord(true);
 
 		input.setBackground(Color.LIGHT_GRAY);
-		input.addKeyListener(this);
+		//Key listener for input is added in the creation code
+		inputStream = new JTextAreaInputStream(input, this);
 
 		Container c = new JLayeredPane();
 		setContentPane(c);
@@ -81,6 +112,9 @@ public class PrintDisplayer extends JFrame implements KeyListener
 			System.err.print(f.getLocalizedMessage());
 		}
 		System.setOut(printStream);
+		JTextAreaInputStreamScanner scanner = new JTextAreaInputStreamScanner(inputStream);
+
+		IndianPoker.setScanner(scanner);
 		IndianPoker.main(new String[]{});
 	}
 
@@ -94,40 +128,5 @@ public class PrintDisplayer extends JFrame implements KeyListener
 	public static void main(String[] args)
 	{
 		new PrintDisplayer();
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e)
-	{
-
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e)
-	{
-		//Listen for enter events, and if so, send input
-		if(e.getKeyCode() == KeyEvent.VK_ENTER)
-		{
-			try
-			{
-				addText(input.getDocument().getText(0, input.getDocument().getLength()) + "\n");
-			}
-			catch(BadLocationException b)
-			{
-				addText("\n" + b.getMessage() + "\n");
-			}
-			input.setText("");
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e)
-	{
-		//Ignore enters
-		if(e.getKeyCode() == KeyEvent.VK_ENTER)
-		{
-			e.consume();
-			input.setText("");
-		}
 	}
 }
