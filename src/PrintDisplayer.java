@@ -116,6 +116,8 @@ public class PrintDisplayer extends JFrame
 
 		IndianPoker.setScanner(scanner);
 		IndianPoker.main(new String[]{});
+
+		dispose();
 	}
 
 	public void addText(String s)
