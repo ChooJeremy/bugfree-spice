@@ -13,6 +13,13 @@ public class FillerCard extends BaseCard
 	}
 
 	@Override
+	protected void startAnimations()
+	{
+		//This card does not do any animations
+		informListeners(0);
+	}
+
+	@Override
 	public boolean performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
 	{
 		//Filler card deals 0 damage and does absolutely nothing

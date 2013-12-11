@@ -19,6 +19,13 @@ public class NumAtkCard extends AttackCard
 	}
 
 	@Override
+	protected void startAnimations()
+	{
+		//This card does not do any animations
+		informListeners(0);
+	}
+
+	@Override
 	public boolean performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
 	{
 		Side8Board board = s8w.getBoard();

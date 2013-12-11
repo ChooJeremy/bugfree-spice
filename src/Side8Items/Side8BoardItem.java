@@ -28,6 +28,7 @@ public class Side8BoardItem extends JButton
 		currentNum = 0;
 		type = 3;
 		shield = 0;
+		buffs = new ArrayList<>();
 	}
 
 	public int getCurrentNum() { return currentNum; }
@@ -47,6 +48,10 @@ public class Side8BoardItem extends JButton
 
 	public void takeDamage(int damage, int currentSide)
 	{
+		for(BaseBuff buff : buffs)
+		{
+			damage = buff.actionPerformed(damage);
+		}
 		int finalDamage = damage;
 		if(shield > 0 && damage > 0)
 		{

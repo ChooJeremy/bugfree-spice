@@ -29,10 +29,18 @@ public abstract class Jeremy
 	public static void main(String[] args)
 	{
 		Scanner scanner = new Scanner(System.in);
+		int power = 0;
+		if(args.length >= 1)
+		{
+			if(isInteger(args[0]))
+			{
+				power = Integer.parseInt(args[0]);
+			}
+		}
 		for (double progressPercentage = 0.0; progressPercentage < 1.0; progressPercentage += 0.0005)
 		{
 			createProgress(progressPercentage);
-			Jeremy.pause(1);
+			Jeremy.pause((long) Math.pow(progressPercentage + 1, power));
 		}
 	}
 

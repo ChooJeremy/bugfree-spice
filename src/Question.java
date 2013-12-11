@@ -12,6 +12,7 @@ public class Question implements Comparable<Question>
 		id = totalQuestion;
 		totalQuestion++;
 		options = new ArrayList<>();
+		title = "";
 	}
 
 	public boolean hasAnswer()

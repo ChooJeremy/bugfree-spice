@@ -417,29 +417,37 @@ public class app extends JFrame implements ActionListener
 		{
 			//Opponent should now play a card.
 
-			//Play the first card.
-			BaseCard cardBeingPlayed = s8w.getOpponent().getHand().get(0);
+			//Play a random card
+			Random random = new Random();
+			int cardLocation = random.nextInt(s8w.getOpponent().getHand().size());
+			BaseCard cardBeingPlayed = s8w.getOpponent().getHand().get(cardLocation);
+			s8w.setCardNo(cardLocation);
+
 			System.out.println("Opponent played card: " + cardBeingPlayed);
 
-			//Run the card if possible
-			if(cardBeingPlayed.getTotalTargetsRequired() == 0)
+			//Play the card.
+			ArrayList<Integer> targets = cardBeingPlayed.getAISelectionOfTargets(s8w);
+			for(int aTarget : targets)
 			{
-				performCardAction(cardBeingPlayed);
+				s8w.addTargetSelection(aTarget);
+			}
+			performCardAction(cardBeingPlayed);
+			//Now invalidate the targets
+			s8w.finishSelection();
 
-				//Discard the card from the opponent's hands - it shouldn't be shown on the board
-				s8w.getOpponent().removeCardFromHand(cardBeingPlayed);
+			//Discard the card from the opponent's hands - it shouldn't be shown on the board
+			s8w.getOpponent().removeCardFromHand(cardBeingPlayed);
 
-				//full update
-				removeHoverOverCard();
-				deselectEverything();
-				fillBoard();
-				repaint();
-				revalidate();
+			//full update
+			removeHoverOverCard();
+			deselectEverything();
+			fillBoard();
+			repaint();
+			revalidate();
 
-				if(isEnemyTurn)
-				{
-					new AppTimer(this, AppTimer.allocateNextTurn, 1000);
-				}
+			if(isEnemyTurn)
+			{
+				new AppTimer(this, AppTimer.allocateNextTurn, 1000);
 			}
 
 			isEnemyTurn = false;

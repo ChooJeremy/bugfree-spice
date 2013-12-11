@@ -29,17 +29,26 @@ public class QuizBruteForcer
 						userInput = scanner.nextLine();
 						if(!userInput.trim().equals("") && !userInput.equals("\t\t") && !userInput.equalsIgnoreCase("E"))
 						{
-							if(!userInput.trim().equalsIgnoreCase("answer") && !userInput.trim().equalsIgnoreCase("Select the most appropriate fact-finding technique."))
+							if(!userInput.trim().equalsIgnoreCase("answer") &&
+									!userInput.trim().equalsIgnoreCase("Select the most appropriate fact-finding technique.") &&
+									!userInput.trim().equalsIgnoreCase("A.") &&
+									!userInput.trim().equalsIgnoreCase("B.") &&
+									!userInput.trim().equalsIgnoreCase("C.") &&
+									!userInput.trim().equalsIgnoreCase("D."))
 							{
 								if(!titleSet)
 								{
-									question.setTitle(userInput);
-									titleSet = true;
+									question.setTitle(question.title + " " + userInput);
 								}
 								else
 								{
 									question.addOption(userInput);
 								}
+							}
+							else if(userInput.trim().equalsIgnoreCase("answer"))
+							{
+								titleSet = true;
+								question.title = question.title.trim();
 							}
 						}
 					}
@@ -73,13 +82,20 @@ public class QuizBruteForcer
 					System.out.println(questions.size() + " question(s) printed, " + getTotalAnswers(questions) + " with answers.");
 					break;
 				case "S":
-					System.out.println("Enter question title: ");
+					System.out.println("Enter question title, e to exit: ");
+					Question question2 = new Question();
 					do
 					{
-						userInput = scanner.nextLine();
-					} while (userInput.equals(""));
-					Question question2 = new Question();
-					question2.setTitle(userInput);
+						do
+						{
+							userInput = scanner.nextLine();
+						} while (userInput.equals(""));
+						if(!userInput.equalsIgnoreCase("e"))
+						{
+							question2.setTitle(question2.title + " " + userInput.trim());
+						}
+					} while (!userInput.equalsIgnoreCase("e"));
+					question2.title = question2.title.trim();
 					int result = Jeremy.searchInArrayList(questions, question2);
 					if(result == -1)
 					{
@@ -133,13 +149,20 @@ public class QuizBruteForcer
 					}
 					break;
 				case "D":
-					System.out.println("Enter question title: ");
+					System.out.println("Enter question title, e to exit: ");
+					Question question4 = new Question();
 					do
 					{
-						userInput = scanner.nextLine();
-					} while (userInput.equals(""));
-					Question question4 = new Question();
-					question4.setTitle(userInput);
+						do
+						{
+							userInput = scanner.nextLine();
+						} while (userInput.equals(""));
+						if(!userInput.equalsIgnoreCase("e"))
+						{
+							question4.setTitle(question4.title + " " + userInput.trim());
+						}
+					} while (!userInput.equalsIgnoreCase("e"));
+					question4.title = question4.title.trim();
 					int location = Jeremy.searchInArrayList(questions, question4);
 					if(location == -1)
 					{

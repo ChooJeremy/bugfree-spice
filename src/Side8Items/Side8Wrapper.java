@@ -9,7 +9,7 @@ public class Side8Wrapper
 	private Side8Player player;
 	private Side8Player opponent;
 	private Side8Board board;
-	//Attributes to store the cards
+	//1st stores the location of the card to be played, 2nd stores all the targets
 	private ArrayList<Integer> cardsBeingUsed;
 
 	public Side8Player getPlayer() {return player; }
@@ -47,6 +47,12 @@ public class Side8Wrapper
 		Collections.sort(opponent.getHand());
 	}
 
+	/**
+	 * Sets the card to be played. If there is already a card that is planned to be played, it clears the target selection of that
+	 * card as well
+	 *
+	 * @param number the location of the card to be played
+	 */
 	public void setCardNo(int number)
 	{
 		if(cardsBeingUsed.size() == 0)
@@ -55,16 +61,27 @@ public class Side8Wrapper
 		}
 		else
 		{
-			cardsBeingUsed.remove(0);
-			cardsBeingUsed.add(0, number);
+			cardsBeingUsed.clear();
+			cardsBeingUsed.add(number);
 		}
 	}
 
+	/**
+	 * Returns the card number selected, or null if no card is selected
+	 *
+	 * @return the card number selected, or null.
+	 */
 	public Integer getCardNo()
 	{
 		return cardsBeingUsed.size() == 0 ? null : cardsBeingUsed.get(0);
 	}
 
+	/**
+	 * Attempts to add a target selection for the card. If there is no card selected at this time, fails and returns false
+	 *
+	 * @param number the selected target on the board
+	 * @return success or failure
+	 */
 	public boolean addTargetSelection(int number)
 	{
 		if(cardsBeingUsed.size() != 0)
@@ -78,6 +95,11 @@ public class Side8Wrapper
 		}
 	}
 
+	/**
+	 * Returns the targets selected for the card in an ArrayList<Integer>. Does not return the card location.
+	 *
+	 * @return the targets selected for the card, or NULL if there is no card selected in the first place.
+	 */
 	public ArrayList<Integer> getTargetSelection()
 	{
 		if(cardsBeingUsed.size() == 0)
@@ -92,6 +114,10 @@ public class Side8Wrapper
 		return result;
 	}
 
+	/**
+	 * To be used when the card selection is finished, for whatever reason. Clears the card selection array.
+	 *
+	 */
 	public void finishSelection()
 	{
 		cardsBeingUsed.clear();

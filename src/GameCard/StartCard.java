@@ -17,6 +17,13 @@ public class StartCard extends BaseCard
 	}
 
 	@Override
+	protected void startAnimations()
+	{
+		//This card does not do any animations
+		this.informListeners(0);
+	}
+
+	@Override
 	public boolean performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
 	{
 		Side8Board board = s8w.getBoard();

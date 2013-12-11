@@ -1,5 +1,6 @@
 package GameCard;
 
+import Listeners.ThrowListener;
 import Side8Items.*;
 
 import javax.imageio.ImageIO;
@@ -8,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public abstract class BaseCard implements Comparable<BaseCard>
+public abstract class BaseCard implements Comparable<BaseCard>, Runnable
 {
 	public static final int ALLY = 1;
 	public static final int ENEMY = 2;
@@ -21,6 +22,7 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	private int type;
 	private int totalTargetsRequired;
 	private BufferedImage image;
+	private ArrayList<ThrowListener> listeners;
 
 	public BaseCard(String n, String sd, String d, String ft, int t, int targets)
 	{
@@ -34,6 +36,7 @@ public abstract class BaseCard implements Comparable<BaseCard>
 		flavourText  = ft;
 		type = t;
 		totalTargetsRequired = targets;
+		listeners = new ArrayList<>();
 	}
 
 	public String getName() { return name;}
@@ -72,9 +75,43 @@ public abstract class BaseCard implements Comparable<BaseCard>
 		}
 	}
 
+	public void addListener(ThrowListener tl)
+	{
+		if(!listeners.contains(tl))
+		{
+			listeners.add(tl);
+		}
+	}
+
 	/**
-	 * Performs the action for this card. Pass in the current board and the target selected (0-8) and the method will perform
-	 * the rest, removing and increasing certain numbers on the board as necessary
+	 * Informas all the listeners about an event
+	 *
+	 * @param status the status code to tell the listeners
+	 */
+	protected void informListeners(int status)
+	{
+		for(ThrowListener tl : listeners)
+		{
+			tl.catchEvent(status);
+		}
+	}
+
+	public void run()
+	{
+		startAnimations();
+	}
+
+	/**
+	 * Starts the animations that will be shown when this card is played. On end, please call informListeners.
+	 *
+	 */
+	protected abstract void startAnimations();
+
+	/**
+	 * Performs the action for this card. Pass in the current game and the target selected (0-8) and the method will perform
+	 * the rest, removing and increasing certain numbers on the board as necessary. Animations may need to be performed during this
+	 * period of time. Therefore, the method call may end prematurely while all the values and animations are still upating or
+	 * running. To be informed on when everything finishes, implement ThrowListener and add yourself as a listener.
 	 *
 	 * @param currentStatus the current game board and the player's hands.
 	 * @param targets the targets selected (0-8), horizontal first. Cards that only take in 1 target should have a limit of 1 in this
@@ -86,7 +123,7 @@ public abstract class BaseCard implements Comparable<BaseCard>
 	public abstract boolean performAction(Side8Wrapper currentStatus, ArrayList<Integer> targets);
 
 	/**
-	 * Gets a list of targets that would be most beneficialto the "opponent" part in Side8Wrapper given the current circumstances,
+	 * Gets a list of targets that would be most beneficial to the "opponent" part in Side8Wrapper given the current circumstances,
 	 * as dictated by the action of the card
 	 *
 	 * @param currentStatus the current game board and the player's hands
