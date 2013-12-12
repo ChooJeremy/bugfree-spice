@@ -26,7 +26,7 @@ public class NumAtkCard extends AttackCard
 	}
 
 	@Override
-	public boolean performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
+	public boolean performAction(Side8Wrapper s8w, ArrayList<Side8BoardTarget> targets)
 	{
 		Side8Board board = s8w.getBoard();
 

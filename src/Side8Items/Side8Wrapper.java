@@ -9,8 +9,10 @@ public class Side8Wrapper
 	private Side8Player player;
 	private Side8Player opponent;
 	private Side8Board board;
-	//1st stores the location of the card to be played, 2nd stores all the targets
-	private ArrayList<Integer> cardsBeingUsed;
+	//Stores the location of the card to be played
+	private int cardBeingUsed;
+	//Stores the target of the cards
+	private ArrayList<Side8BoardTarget> cardTargets;
 
 	public Side8Player getPlayer() {return player; }
 	public Side8Player getOpponent() {return opponent; }
@@ -21,7 +23,8 @@ public class Side8Wrapper
 		board = new Side8Board();
 		player = new Side8Player();
 		opponent = new Side8Player();
-		cardsBeingUsed = new ArrayList<>();
+		cardTargets = new ArrayList<>();
+		cardBeingUsed = -1;
 		restart();
 	}
 
@@ -31,7 +34,7 @@ public class Side8Wrapper
 		board = new Side8Board();
 		player = new Side8Player();
 		opponent = new Side8Player();
-		cardsBeingUsed = new ArrayList<>();
+		cardTargets = new ArrayList<>();
 
 		ArrayList<BaseCard> startingDeck = initDeck(4);
 		for(int i = 0; i < 7; i++)
@@ -55,25 +58,18 @@ public class Side8Wrapper
 	 */
 	public void setCardNo(int number)
 	{
-		if(cardsBeingUsed.size() == 0)
-		{
-			cardsBeingUsed.add(number);
-		}
-		else
-		{
-			cardsBeingUsed.clear();
-			cardsBeingUsed.add(number);
-		}
+		cardBeingUsed = number;
+		cardTargets.clear();
 	}
 
 	/**
-	 * Returns the card number selected, or null if no card is selected
+	 * Returns the card number selected, or -1 if no card is selected
 	 *
-	 * @return the card number selected, or null.
+	 * @return the card number selected, or -1.
 	 */
-	public Integer getCardNo()
+	public int getCardNo()
 	{
-		return cardsBeingUsed.size() == 0 ? null : cardsBeingUsed.get(0);
+		return cardBeingUsed;
 	}
 
 	/**
@@ -84,9 +80,10 @@ public class Side8Wrapper
 	 */
 	public boolean addTargetSelection(int number)
 	{
-		if(cardsBeingUsed.size() != 0)
+		if(cardBeingUsed != -1)
 		{
-			cardsBeingUsed.add(number);
+			//Goes to get the board to find the co-ordinates
+			cardTargets.add(new Side8BoardTarget(number, board.getBoardItem(number).getLocation()));
 			return true;
 		}
 		else
@@ -100,18 +97,13 @@ public class Side8Wrapper
 	 *
 	 * @return the targets selected for the card, or NULL if there is no card selected in the first place.
 	 */
-	public ArrayList<Integer> getTargetSelection()
+	public ArrayList<Side8BoardTarget> getTargetSelection()
 	{
-		if(cardsBeingUsed.size() == 0)
+		if(cardBeingUsed == -1)
 		{
 			return null;
 		}
-		ArrayList<Integer> result = new ArrayList<>();
-		for(int i = 1; i < cardsBeingUsed.size(); i++)
-		{
-			result.add(cardsBeingUsed.get(i));
-		}
-		return result;
+		return cardTargets;
 	}
 
 	/**
@@ -120,7 +112,8 @@ public class Side8Wrapper
 	 */
 	public void finishSelection()
 	{
-		cardsBeingUsed.clear();
+		cardTargets.clear();
+		cardBeingUsed = -1;
 	}
 
 	public static ArrayList<BaseCard> initDeck(int totalRepeats)

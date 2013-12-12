@@ -24,7 +24,7 @@ public class StartCard extends BaseCard
 	}
 
 	@Override
-	public boolean performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
+	public boolean performAction(Side8Wrapper s8w, ArrayList<Side8BoardTarget> targets)
 	{
 		Side8Board board = s8w.getBoard();
 		if(targets.size() > 1)
@@ -33,7 +33,7 @@ public class StartCard extends BaseCard
 		}
 		else
 		{
-			int target = targets.get(0);
+			int target = targets.get(0).getLocation();
 			board.setBoardNumber(target, thisNum);
 			board.setStatus(target, Side8Board.ALLY);
 			return false;

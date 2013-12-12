@@ -261,7 +261,7 @@ public class app extends JFrame implements ActionListener
 		else
 		{
 			//Player has not selected a card
-			if(s8w.getCardNo() == null)
+			if(s8w.getCardNo() == -1)
 			{
 				if(isStartOfGame)
 				{
@@ -310,7 +310,7 @@ public class app extends JFrame implements ActionListener
 					}
 					//Get the card
 					int playerCardLocation = s8w.getCardNo();
-					int playerCardNo = Integer.parseInt(((JButton) playerBoard.getComponent(s8w.getCardNo())).getText());
+					int playerCardNo = Integer.parseInt(((JButton) playerBoard.getComponent(playerCardLocation)).getText());
 
 					//Set to location
 					((JButton) gameBoard.getComponent(selectedCardLocation)).setText("" + playerCardNo);
@@ -335,6 +335,37 @@ public class app extends JFrame implements ActionListener
 					s8w.addTargetSelection(selectedCardLocation);
 
 					//Run the card if possible
+					BaseCard cardBeingPlayed = s8w.getPlayer().getHand().get(s8w.getCardNo());
+					if(cardBeingPlayed.getTotalTargetsRequired() == s8w.getTargetSelection().size())
+					{
+						performCardAction(s8w.getPlayer().getHand().get(s8w.getCardNo()));
+						//Discard the card from the player's hands - it shouldn't be shown on the board
+						s8w.getPlayer().removeCardFromHand(cardBeingPlayed);
+						//Also, now the cardNo selections and the targets are now invalid, invalidate them
+						s8w.finishSelection();
+
+						//Remove the card from the player's hand so that it's not shown
+						//Find the location in terms of the playerBoard.
+						int cardLocation = -1;
+						for(int i = 0; i < playerBoard.getComponentCount(); i++)
+						{
+							if(playerBoard.getComponent(i) instanceof CardShower)
+							{
+								if(((CardShower) playerBoard.getComponent(i)).isCard(cardBeingPlayed))
+								{
+									cardLocation = i;
+									break;
+								}
+							}
+						}
+						updatePlayerHand(cardLocation);
+
+						//Update remaining stuff
+						removeHoverOverCard();
+						fillBoard();
+						repaint();
+						revalidate();
+					}
 
 					//Update final stuff
 					deselectEverything();
@@ -478,7 +509,7 @@ public class app extends JFrame implements ActionListener
 				if(s8w.getPlayer().getHand().size() > 1)
 				{
 					//Time to set the neutrals!
-					if(s8w.getCardNo() == null)
+					if(s8w.getCardNo() == -1)
 					{
 						isEnemyTurn = false;
 						//Don't immediately change, append

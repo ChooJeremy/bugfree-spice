@@ -95,7 +95,14 @@ public class Side8Player
 		//BETA
 		while(deck.size() < 45)
 		{
-			deck.add(new NumAtkCard(random.nextInt(10) + 1));
+			if(random.nextBoolean() || random.nextBoolean())
+			{
+				deck.add(new PunchCard());
+			}
+			else
+			{
+				deck.add(new NumAtkCard(random.nextInt(10) + 1));
+			}
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package GameCard;
 
 import Side8Items.Side8Board;
+import Side8Items.Side8BoardTarget;
 import Side8Items.Side8Wrapper;
 
 import java.util.*;
@@ -20,7 +21,7 @@ public class FillerCard extends BaseCard
 	}
 
 	@Override
-	public boolean performAction(Side8Wrapper s8w, ArrayList<Integer> targets)
+	public boolean performAction(Side8Wrapper s8w, ArrayList<Side8BoardTarget> targets)
 	{
 		//Filler card deals 0 damage and does absolutely nothing
 		return false;

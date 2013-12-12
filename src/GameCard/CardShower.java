@@ -128,7 +128,18 @@ public class CardShower extends JButton implements MouseListener
 		container.repaint();
 	}
 
-	public Point getShowLocation()
+	/**
+	 * Checks if the card being shown in this cardShower is the same as the card passed in
+	 *
+	 * @param bc the card to check with
+	 * @return true, if the the cards are the same, false otherwise
+	 */
+	public boolean isCard(BaseCard bc)
+	{
+		return bc == cardBeingShown;
+	}
+
+	protected Point getShowLocation()
 	{
 		Point result = this.getLocationOnScreen();
 		//Location is based off the screen, change it so that it is now based off the container.

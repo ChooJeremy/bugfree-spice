@@ -110,7 +110,7 @@ public abstract class BaseCard implements Comparable<BaseCard>, Runnable
 	/**
 	 * Performs the action for this card. Pass in the current game and the target selected (0-8) and the method will perform
 	 * the rest, removing and increasing certain numbers on the board as necessary. Animations may need to be performed during this
-	 * period of time. Therefore, the method call may end prematurely while all the values and animations are still upating or
+	 * period of time. Therefore, the method call may end prematurely while all the values and animations are still updating or
 	 * running. To be informed on when everything finishes, implement ThrowListener and add yourself as a listener.
 	 *
 	 * @param currentStatus the current game board and the player's hands.
@@ -120,7 +120,7 @@ public abstract class BaseCard implements Comparable<BaseCard>, Runnable
 	 *
 	 * @see BaseCard#getAISelectionOfTargets(Side8Items.Side8Wrapper) Finding the best target selection as an AI.
 	 */
-	public abstract boolean performAction(Side8Wrapper currentStatus, ArrayList<Integer> targets);
+	public abstract boolean performAction(Side8Wrapper currentStatus, ArrayList<Side8BoardTarget> targets);
 
 	/**
 	 * Gets a list of targets that would be most beneficial to the "opponent" part in Side8Wrapper given the current circumstances,
