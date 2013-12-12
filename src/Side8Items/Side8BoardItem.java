@@ -29,6 +29,11 @@ public class Side8BoardItem extends JButton
 		type = 3;
 		shield = 0;
 		buffs = new ArrayList<>();
+
+		//Display
+		this.setFont(new Font("Calibri", Font.PLAIN, 18));
+		this.setText("0");
+		updateValues(false);
 	}
 
 	public int getCurrentNum() { return currentNum; }

@@ -92,7 +92,7 @@ public class app extends JFrame implements ActionListener
 
 		//Fill the board
 		s8w = new Side8Wrapper();
-		fillBoard();
+		//fillBoard();
 
 		//Fill the player's hands
 		for(int i = 0; i < s8w.getPlayer().getHand().size(); i++)
@@ -111,23 +111,13 @@ public class app extends JFrame implements ActionListener
 	public void fillBoard()
 	{
 		Side8Board board = s8w.getBoard();
+		gameBoard.removeAll();
 		for(int i = 0; i < 9; i++)
 		{
-			JButton jb = (JButton) gameBoard.getComponent(i);
-			jb.setText("" + board.getBoardNumber(i));
-			switch(board.getStatus(i))
-			{
-				case Side8Board.ENEMY:
-					jb.setBackground(Color.RED);
-					break;
-				case Side8Board.ALLY:
-					jb.setBackground(Color.GREEN);
-					break;
-				case Side8Board.NEUTRAL:
-				case 0:
-					jb.setBackground(Color.LIGHT_GRAY);
-					break;
-			}
+			Side8BoardItem o = s8w.getBoard().getBoardItem(i);
+			o.setActionCommand("" + i);
+			o.addActionListener(this);
+			gameBoard.add(o);
 		}
 	}
 
