@@ -170,6 +170,10 @@ public class app extends JFrame implements ActionListener
 				{
 					gameStatus.setText("Please select a card to discard.");
 				}
+				if(s8w.getPlayer().needsToDiscard())
+				{
+					gameStatus.setText("Your turn has ended! Please discard cards as required...");
+				}
 				else
 				{
 					gameStatus.setText("It's the opponent's turn! Please hold on...");
@@ -178,8 +182,7 @@ public class app extends JFrame implements ActionListener
 			return;
 		}
 		/*
-		S
-		ystem.out.println("Action performed!");
+		System.out.println("Action performed!");
 		System.out.println("Source text: " + ((JButton) e.getSource()).getText());
 		System.out.println("Source: " + e.getSource());
 		System.out.println("Background: " + ((JButton) e.getSource()).getBackground());
