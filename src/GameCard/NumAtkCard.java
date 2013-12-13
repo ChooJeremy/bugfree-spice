@@ -35,6 +35,7 @@ public class NumAtkCard extends AttackCard
 			if(board.getBoardNumber(i) == selectedNumber)
 			{
 				board.getBoardItem(i).takeDamage(3);
+				board.getBoardItem(i).updateValues();
 			}
 		}
 		return false;

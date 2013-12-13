@@ -32,6 +32,7 @@ public class PunchCard extends AttackCard
 		Side8Board board = currentStatus.getBoard();
 		Side8BoardItem target = board.getBoardItem(targets.get(0).getLocation());
 		target.takeDamage(4);
+		target.updateValues();
 		return false;
 	}
 

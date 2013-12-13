@@ -60,19 +60,12 @@ public class app extends JFrame implements ActionListener
 		gameBoard = new JPanel();
 		((JComponent) gameBoard).setBorder(BorderFactory.createEmptyBorder(0, 188, 0, 188));
 		gameBoard.setLayout(new GridLayout(3, 3, 1, 1));
-		JButton jb;
-		for(int i = 0; i < 9; i++)
-		{
-			jb = new JButton();
-			jb.setFont(new Font("Calibri", Font.PLAIN, 18));
-			jb.setActionCommand("" + i);
-			jb.addActionListener(this);
-			gameBoard.add(jb);
-		}
+		//gameBoard will be populated later in fillBoard
 
 		//Bottom part: the player's hand. The starting is 7 cards. We populate it with 7 buttons
 		playerBoard = new JPanel();
 		playerBoard.setLayout(new GridLayout(1, 7, 1, 0));
+		JButton jb;
 		for(int i = 0; i < 7; i++)
 		{
 			jb = new JButton("" + i);
@@ -92,7 +85,7 @@ public class app extends JFrame implements ActionListener
 
 		//Fill the board
 		s8w = new Side8Wrapper();
-		//fillBoard();
+		fillBoard();
 
 		//Fill the player's hands
 		for(int i = 0; i < s8w.getPlayer().getHand().size(); i++)
@@ -115,8 +108,10 @@ public class app extends JFrame implements ActionListener
 		for(int i = 0; i < 9; i++)
 		{
 			Side8BoardItem o = s8w.getBoard().getBoardItem(i);
+			o.updateValues(false);
 			o.setActionCommand("" + i);
 			o.addActionListener(this);
+			o.setJLayeredPaneReference(mainPane);
 			gameBoard.add(o);
 		}
 	}

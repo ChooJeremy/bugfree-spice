@@ -12,9 +12,8 @@ public class Side8BoardItem extends JButton
 	public static final int ALLY = 1;
 	public static final int ENEMY = 2;
 	public static final int NEUTRAL = 3;
-	public static final int TEXTWIDTH = 100;
-	public static final int TEXTHEIGHT = 50;
-	public static final int TRANSITIONSTEPS = 50;
+	public static final int TEXTWIDTH = 20;
+	public static final int TEXTHEIGHT = 20;
 	public static final Integer DAMAGENUMBERPANE = new Integer(250);
 
 	private int currentNum;
@@ -112,16 +111,16 @@ public class Side8BoardItem extends JButton
 				//No change in colour, check for change in number
 				if(numberInUI != currentNum)
 				{
-					mainPaneReference.add(createLabelWithChange(currentNum - numberInUI));
+					mainPaneReference.add(createLabelWithChange(currentNum - numberInUI), DAMAGENUMBERPANE);
 				}
 			}
 			else
 			{
 				//There is a change
 				//Firstly, create a new label that shows the previous number being set to 0.
-				mainPaneReference.add(createLabelWithChange(numberInUI * -1));
-				//Transition it to the new colout
-				transition(this.getBackground(), expectedColor, 2000);
+				mainPaneReference.add(createLabelWithChange(numberInUI * -1), DAMAGENUMBERPANE);
+				//Transition it to the new colour
+				transition(this.getBackground(), expectedColor, 1000);
 			}
 		}
 		else
@@ -143,44 +142,23 @@ public class Side8BoardItem extends JButton
 				mainPaneReference.getLocationOnScreen().y * -1
 		);
 		labelMiddle.translate(
-				this.getWidth(),
-				this.getHeight()
+				this.getWidth() / 2,
+				this.getHeight() / 2
 		);
-		JLabel result = new JLabel("" + change);
-		if(change >= 0)
-		{
-			result.setText("+" + result.getText());
-			result.setForeground(Color.GREEN);
-		}
-		else
-		{
-			result.setForeground(Color.RED);
-		}
+		JLabel result = new Side8BoardDamageLabel(change);
+		//Now the label's top left is the exact same as the center of this button.
+		//Change the point to the bottom left.
 		labelMiddle.translate(
-				TEXTWIDTH * -1,
+				0,
 				TEXTHEIGHT * -1
 		);
 		result.setBounds(labelMiddle.x, labelMiddle.y, TEXTWIDTH, TEXTHEIGHT);
+		result.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 		return result;
 	}
 
 	public void transition(Color beginColor, Color endColor, long time)
 	{
-		int pauseTime = (int) time / TRANSITIONSTEPS;
-		double rChange = (beginColor.getRed() - endColor.getRed()) * 1.0 / TRANSITIONSTEPS;
-		double bChange = (beginColor.getBlue() - endColor.getBlue()) * 1.0 / TRANSITIONSTEPS;
-		double gChange = (beginColor.getGreen() - endColor.getGreen()) * 1.0 / TRANSITIONSTEPS;
-		double r, g, b;
-		r = beginColor.getRed();
-		g = beginColor.getGreen();
-		b = beginColor.getBlue();
-		for(int i = 0; i < TRANSITIONSTEPS; i++)
-		{
-			r += rChange;
-			g += gChange;
-			b += bChange;
-			this.setBackground(new Color((int) r, (int) g, (int) b));
-			JeremyCopy.pause(pauseTime);
-		}
+		new Thread(new Side8BoardTransition(beginColor, endColor, time, this)).start();
 	}
 }

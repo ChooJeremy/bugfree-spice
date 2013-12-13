@@ -189,9 +189,11 @@ public class Side8Board
 		{
 			return;
 		}
-		int numberToIncreaseBy = Math.min(0, choices.size() - 4) + 2;
+		int numberToIncreaseBy = Math.max(0, choices.size() - 4) + 2;
 		//Increase a random one by that
-		board[choices.get((int) (Math.random() * choices.size()))].takeDamage(numberToIncreaseBy * -1, ALLY);
+		Side8BoardItem itemToIncrease = getBoardItem((int) (Math.random() * choices.size()));
+		itemToIncrease.takeDamage(numberToIncreaseBy * -1, ALLY);
+		itemToIncrease.updateValues();
 	}
 
 	public void startEnemyTurn()
@@ -209,12 +211,14 @@ public class Side8Board
 				choices.add(i);
 			}
 		}
-		int numberToIncreaseBy = Math.min(0, choices.size() - 4) + 2;
+		int numberToIncreaseBy = Math.max(0, choices.size() - 4) + 2;
 		if(choices.size() == 0)
 		{
 			return;
 		}
 		//Increase a random one by that
-		board[choices.get((int) (Math.random() * choices.size()))].takeDamage(numberToIncreaseBy * -1, ENEMY);
+		Side8BoardItem itemToIncrease = getBoardItem((int) (Math.random() * choices.size()));
+		itemToIncrease.takeDamage(numberToIncreaseBy * -1, ENEMY);
+		itemToIncrease.updateValues();
 	}
 }
