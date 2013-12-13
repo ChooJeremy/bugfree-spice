@@ -19,6 +19,7 @@ public class Side8BoardItem extends JButton
 	private int currentNum;
 	private int type;
 	private int shield;
+	private boolean isConverse;
 	private ArrayList<BaseBuff> buffs;
 	private JLayeredPane mainPaneReference;
 
@@ -27,6 +28,7 @@ public class Side8BoardItem extends JButton
 		currentNum = 0;
 		type = 3;
 		shield = 0;
+		isConverse = false;
 		buffs = new ArrayList<>();
 
 		//Display
@@ -36,18 +38,71 @@ public class Side8BoardItem extends JButton
 	}
 
 	public int getCurrentNum() { return currentNum; }
-    public int getType() { return type; }
+    public int getType()
+    {
+	    if(!isConverse)
+	    {
+		    return type;
+	    }
+	    else
+	    {
+		    return getConverseType(type);
+	    }
+    }
 	public int getShield() { return shield; }
 	public ArrayList<BaseBuff> getBuffs() { return buffs; }
 	public void setCurrentNum(int currentNum) { this.currentNum = currentNum; }
-	public void setType(int type) {	this.type = type; }
+	public void setType(int t)
+	{
+		if(!isConverse)
+		{
+			type = t;
+		}
+		else
+		{
+			type = getConverseType(t);
+		}
+	}
 	public void setShield(int shield) {	this.shield = shield; }
 	public void addBuff(BaseBuff buff) { buffs.add(buff); }
 	public void setJLayeredPaneReference(JLayeredPane ref) {mainPaneReference = ref;}
 
+	public static int getConverseType(int type)
+	{
+		if(type == ALLY)
+		{
+			return ENEMY;
+		}
+		else if(type == ENEMY)
+		{
+			return ALLY;
+		}
+		else
+		{
+			return type;
+		}
+	}
+
+	public void setConverse()
+	{
+		isConverse = true;
+	}
+
+	public void removeConverse()
+	{
+		isConverse = false;
+	}
+
 	public void takeDamage(int damage)
 	{
-		takeDamage(damage, ALLY);
+		if(isConverse)
+		{
+			takeDamage(damage, ENEMY);
+		}
+		else
+		{
+			takeDamage(damage, ALLY);
+		}
 	}
 
 	public void takeDamage(int damage, int currentSide)

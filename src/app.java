@@ -22,6 +22,7 @@ public class app extends JFrame implements ActionListener
 	private int turnCounter;
 	private boolean playerHasPlayed;
 	private boolean enemyHasPlayed;
+	private boolean gameIsOver;
 
 	public app()
 	{
@@ -97,6 +98,7 @@ public class app extends JFrame implements ActionListener
 		//Player starts first
 		playerStartFirst = true;
 		isStartOfGame = true;
+		gameIsOver = false;
 		allocateNextTurn();
 		listenForInput();
 	}
@@ -133,6 +135,10 @@ public class app extends JFrame implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
+		if(gameIsOver)
+		{
+			return;
+		}
 		if(isEnemyTurn)
 		{
 			//It might be the time for the player to discard his card. Do the check, and if so, discard it.
@@ -447,6 +453,7 @@ public class app extends JFrame implements ActionListener
 			{
 				s8w.addTargetSelection(aTarget);
 			}
+			System.out.println("Targets: " + targets);
 			performCardAction(cardBeingPlayed);
 			//Now invalidate the targets
 			s8w.finishSelection();
@@ -740,6 +747,7 @@ public class app extends JFrame implements ActionListener
 				{
 					if(turnCounter == 10)
 					{
+						gameIsOver = true;
 						//GAME ENDS!
 						int playerCount = s8w.getBoard().getPlayerCount();
 						int enemyCount = s8w.getBoard().getEnemyCount();
@@ -783,8 +791,7 @@ public class app extends JFrame implements ActionListener
 		//Format the board accordingly if required
 		if(isEnemyTurn)
 		{
-			Side8Board boardToSend = s8w.getBoard().performConversion();
-			s8w.getBoard().copyBoard(boardToSend);
+			s8w.getBoard().setConverse();
 		}
 
 		isPlayAgain = cardToPlay.performAction(s8w, s8w.getTargetSelection());
@@ -792,8 +799,7 @@ public class app extends JFrame implements ActionListener
 		//Reset it back if required
 		if(isEnemyTurn)
 		{
-			Side8Board normalBoard = s8w.getBoard().performConversion();
-			s8w.getBoard().copyBoard(normalBoard);
+			s8w.getBoard().clearConverse();
 		}
 
 		if(!isPlayAgain)

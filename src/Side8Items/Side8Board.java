@@ -84,6 +84,22 @@ public class Side8Board
 		}
 	}
 
+	public void setConverse()
+	{
+		for(Side8BoardItem i : board)
+		{
+			i.setConverse();
+		}
+	}
+
+	public void clearConverse()
+	{
+		for(Side8BoardItem i : board)
+		{
+			i.removeConverse();
+		}
+	}
+
 	public Side8Board performConversion()
 	{
 		Side8Board result = new Side8Board();
@@ -191,7 +207,9 @@ public class Side8Board
 		}
 		int numberToIncreaseBy = Math.max(0, choices.size() - 4) + 2;
 		//Increase a random one by that
-		Side8BoardItem itemToIncrease = getBoardItem((int) (Math.random() * choices.size()));
+		int location = choices.get((int) (Math.random() * choices.size()));
+		Side8BoardItem itemToIncrease = getBoardItem(location);
+		System.out.println("End of player turn: " + location + " is healed by " + numberToIncreaseBy);
 		itemToIncrease.takeDamage(numberToIncreaseBy * -1, ALLY);
 		itemToIncrease.updateValues();
 	}
@@ -217,7 +235,9 @@ public class Side8Board
 			return;
 		}
 		//Increase a random one by that
-		Side8BoardItem itemToIncrease = getBoardItem((int) (Math.random() * choices.size()));
+		int location = choices.get((int) (Math.random() * choices.size()));
+		Side8BoardItem itemToIncrease = getBoardItem(location);
+		System.out.println("End of enemy turn: " + location + " is healed by " + numberToIncreaseBy);
 		itemToIncrease.takeDamage(numberToIncreaseBy * -1, ENEMY);
 		itemToIncrease.updateValues();
 	}
