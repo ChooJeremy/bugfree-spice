@@ -46,4 +46,10 @@ public class NumAtkCard extends AttackCard
 	{
 		return new ArrayList<>();
 	}
+
+	@Override
+	public boolean isValidTarget(Side8Wrapper currentStatus, ArrayList<Side8BoardTarget> targets)
+	{
+		return targets.size() == 0;
+	}
 }

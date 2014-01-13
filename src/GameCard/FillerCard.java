@@ -33,5 +33,11 @@ public class FillerCard extends BaseCard
 		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
+	@Override
+	public boolean isValidTarget(Side8Wrapper currentStatus, ArrayList<Side8BoardTarget> targets)
+	{
+		return targets.size() == 0;
+	}
+
 
 }

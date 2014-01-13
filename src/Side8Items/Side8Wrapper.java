@@ -2,6 +2,9 @@ package Side8Items;
 
 import GameCard.*;
 import Helper.JeremyCopy;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.*;
 
 public class Side8Wrapper
@@ -13,6 +16,7 @@ public class Side8Wrapper
 	private int cardBeingUsed;
 	//Stores the target of the cards
 	private ArrayList<Side8BoardTarget> cardTargets;
+	private JLayeredPane contentPane;
 
 	public Side8Player getPlayer() {return player; }
 	public Side8Player getOpponent() {return opponent; }
@@ -50,6 +54,20 @@ public class Side8Wrapper
 		Collections.sort(opponent.getHand());
 	}
 
+	public void setContentPane(JLayeredPane p)
+	{
+		if(contentPane != null)
+		{
+			throw new RuntimeException("Content pane set twice!");
+		}
+		else
+		{
+			contentPane = p;
+		}
+	}
+
+	public JLayeredPane getContentPane() {return contentPane;}
+
 	/**
 	 * Sets the card to be played. If there is already a card that is planned to be played, it clears the target selection of that
 	 * card as well
@@ -83,7 +101,10 @@ public class Side8Wrapper
 		if(cardBeingUsed != -1)
 		{
 			//Goes to get the board to find the co-ordinates
-			cardTargets.add(new Side8BoardTarget(number, board.getBoardItem(number).getLocation()));
+			Side8BoardItem boardItem = board.getBoardItem(number);
+			Point location = boardItem.getLocation();
+			location.translate(boardItem.getParent().getLocation().x, boardItem.getParent().getLocation().y);
+			cardTargets.add(new Side8BoardTarget(number, location));
 			return true;
 		}
 		else
@@ -104,6 +125,15 @@ public class Side8Wrapper
 			return null;
 		}
 		return cardTargets;
+	}
+
+	/**
+	 * Clears the target selection of the current card. to be used if it is found that the targets are invalid.
+	 *
+	 */
+	public void clearSelection()
+	{
+		cardTargets.clear();
 	}
 
 	/**

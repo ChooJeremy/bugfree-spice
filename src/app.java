@@ -86,6 +86,7 @@ public class app extends JFrame implements ActionListener
 
 		//Fill the board
 		s8w = new Side8Wrapper();
+		s8w.setContentPane(mainPane);
 		fillBoard();
 
 		//Fill the player's hands
@@ -332,6 +333,12 @@ public class app extends JFrame implements ActionListener
 					BaseCard cardBeingPlayed = s8w.getPlayer().getHand().get(s8w.getCardNo());
 					if(cardBeingPlayed.getTotalTargetsRequired() == s8w.getTargetSelection().size())
 					{
+						if(!cardBeingPlayed.isValidTarget(s8w, s8w.getTargetSelection()))
+						{
+							gameStatus.setText("Invalid targets selected! Please try again.");
+							s8w.clearSelection();
+							return;
+						}
 						performCardAction(s8w.getPlayer().getHand().get(s8w.getCardNo()));
 						//Discard the card from the player's hands - it shouldn't be shown on the board
 						s8w.getPlayer().removeCardFromHand(cardBeingPlayed);
@@ -437,6 +444,7 @@ public class app extends JFrame implements ActionListener
 					}
 				}
 			}
+			allocateNextTurn();
 		}
 		else
 		{
@@ -471,14 +479,8 @@ public class app extends JFrame implements ActionListener
 			repaint();
 			revalidate();
 
-			if(isEnemyTurn)
-			{
-				new AppTimer(this, AppTimer.allocateNextTurn, 1000);
-			}
-
-			isEnemyTurn = false;
+			new AppTimer(this, AppTimer.allocateNextTurn, 1000);
 		}
-		allocateNextTurn();
 	}
 
 	public void allocateNextTurn()
@@ -798,6 +800,8 @@ public class app extends JFrame implements ActionListener
 		}
 
 		isPlayAgain = cardToPlay.performAction(s8w, s8w.getTargetSelection());
+		//Start the animations
+		new Thread(cardToPlay).start();
 
 		//Reset it back if required
 		if(isEnemyTurn)

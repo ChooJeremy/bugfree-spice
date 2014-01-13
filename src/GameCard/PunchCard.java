@@ -1,15 +1,23 @@
 package GameCard;
 
+import Helper.JeremyCopy;
+import ImageHelpers.FadeImage;
 import Side8Items.Side8Board;
 import Side8Items.Side8BoardItem;
 import Side8Items.Side8BoardTarget;
 import Side8Items.Side8Wrapper;
 import sun.util.logging.resources.logging_es;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
 public class PunchCard extends AttackCard
 {
+	private JLayeredPane mainPane;
+	private Point coordinates;
+
 	public PunchCard()
 	{
 		super("The Punch",
@@ -22,7 +30,15 @@ public class PunchCard extends AttackCard
 	@Override
 	protected void startAnimations()
 	{
-		//No animations for now
+		FadeImage fi = new FadeImage("images/punchicon.png", 1000);
+		mainPane.add(fi, BaseCard.ANIMATIONPANE);
+		//Align the coordinates such that the image appears in the middle of side8BoardItem
+		coordinates.translate(fi.getImageWidth()/-2, fi.getImageHeight()/-2);
+		//Add it
+		fi.setBounds((int) coordinates.getX(), (int) coordinates.getY(), fi.getImageWidth(), fi.getImageHeight());
+
+		new Thread(fi).start();
+		JeremyCopy.pause(1000);
 		informListeners(0);
 	}
 
@@ -30,7 +46,14 @@ public class PunchCard extends AttackCard
 	public boolean performAction(Side8Wrapper currentStatus, ArrayList<Side8BoardTarget> targets)
 	{
 		Side8Board board = currentStatus.getBoard();
-		Side8BoardItem target = board.getBoardItem(targets.get(0).getLocation());
+		mainPane = currentStatus.getContentPane();
+		Side8BoardTarget theTarget = targets.get(0);
+		Side8BoardItem target = board.getBoardItem(theTarget.getLocation());
+
+		coordinates = new Point(theTarget.getXCoordinate(), theTarget.getYCoordinate());
+		//Move coordinates to the middle of the Side8BoardItem
+		coordinates.translate(target.getWidth()/2, target.getHeight()/2);
+
 		target.takeDamage(4);
 		target.updateValues();
 		return false;
@@ -57,5 +80,18 @@ public class PunchCard extends AttackCard
 		}
 		results.add(lowestLocation);
 		return results;
+	}
+
+	@Override
+	public boolean isValidTarget(Side8Wrapper currentStatus, ArrayList<Side8BoardTarget> targets)
+	{
+		if(targets.size() == 1)
+		{
+			int targetType =  currentStatus.getBoard().getBoardItem(
+								targets.get(0).getLocation()
+								).getType();
+			return targetType != Side8BoardItem.ALLY;
+		}
+		return false;
 	}
 }

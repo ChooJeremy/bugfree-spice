@@ -47,6 +47,12 @@ public class StartCard extends BaseCard
 	}
 
 	@Override
+	public boolean isValidTarget(Side8Wrapper currentStatus, ArrayList<Side8BoardTarget> targets)
+	{
+		return targets.size() == 0;
+	}
+
+	@Override
 	public int compareTo(BaseCard o)
 	{
 		StartCard sc = (StartCard) o;

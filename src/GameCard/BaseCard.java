@@ -4,6 +4,7 @@ import Listeners.ThrowListener;
 import Side8Items.*;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +15,7 @@ public abstract class BaseCard implements Comparable<BaseCard>, Runnable
 	public static final int ALLY = 1;
 	public static final int ENEMY = 2;
 	public static final int BOTH = 3;
+	public static final Integer ANIMATIONPANE = new Integer(250); //Between the modal layer and popup layer
 
 	private String name;
 	private String description;
@@ -132,6 +134,8 @@ public abstract class BaseCard implements Comparable<BaseCard>, Runnable
 	 * @see BaseCard#performAction(Side8Items.Side8Wrapper, java.util.ArrayList) Where the action is actually performed
 	 */
 	public abstract ArrayList<Integer> getAISelectionOfTargets(Side8Wrapper currentStatus);
+
+	public abstract boolean isValidTarget(Side8Wrapper currentStatus, ArrayList<Side8BoardTarget> targets);
 
 	@Override
 	public String toString()
